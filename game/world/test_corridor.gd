@@ -40,6 +40,7 @@ func _build_corridor() -> void:
 		lamp.omni_range = 7.0
 		lamp.light_energy = 1.4
 		lamp.light_color = Color(1.0, 0.95, 0.85)
+		lamp.add_to_group(&"corridor_lamps")
 		add_child(lamp)
 
 func _door(at: Vector3, side: float, mat: StandardMaterial3D, prompt_text: String) -> void:

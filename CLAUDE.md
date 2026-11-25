@@ -16,6 +16,7 @@ Godot 4.7 (GDScript) 1인칭 3D 공포 미연시예요. 던전 게임(MyGodotGam
 | 세계·설정 | `docs/plan/setting-bible.md` (다 정하지 않는 원칙 §4) |
 | 컨셉·공포 연출 | `docs/plan/dorm-horror-concept.md` |
 | 아트·캐릭터 | `docs/plan/art-bible.md` |
+| 3D 캐릭터 시험 | `docs/plan/char3d-test-plan.md` |
 
 3. 문서와 요청이 부딪치면 작업 전에 사용자에게 확인한다. "문서 읽었어요" 같은 보고는 하지 않는다.
 

@@ -53,6 +53,18 @@ pause={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"physical_keycode":4194305)]
 }
+debug_toggle_night={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":78)]
+}
+debug_next_expression={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":88)]
+}
+debug_toggle_walk={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"physical_keycode":66)]
+}
 
 [rendering]
 
