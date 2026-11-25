@@ -12,7 +12,7 @@ _마지막 갱신: 2026-11-26_
 
 ## 다음 할 일
 1. **회색 상자 판** (tech-plan §4): 하루 흐름(아침 사감실 업무 → 낮 수리·민원 → 점호 → 심야 순찰 → 일지·회귀)을 그림 없이 돌아가게
-2. 3D 캐릭터 1명 시험(마네킹) → **실제 모델로 바꾸기**: 옷·머리 부품 1차 끝(Blender 스크립트, `char3d-test-01-mannequin.md` §6) · 남은 것 = 얼굴 표정 그림(아트 채팅 ComfyUI) · 가발·베레모·트렌치 로우폴리(PC Blender) — `docs/plan/char3d-test-01-mannequin.md` §4. 원래 계획: "Family Time 느낌" 방법(tech-plan §5-4)으로 기숙생 1명: 로우폴리 몸(Blender 또는 Tripo 로우폴리) + 그린 얼굴 텍스처 → 시험 복도에 세움 → 낮·밤 손전등 정지 화면 · 표정 3개 · 걷기 10초. PC 필요(`docs/pc-setup.md`)
+2. 3D 캐릭터 1명 시험(마네킹) → **모델링 방식 다시(사용자 11-26)**: R27_2 → 데포르메 5.5등신 전신 그림(ChatGPT, 정면+뒷모습) → Tripo 3D → Godot (`char3d-test-01-mannequin.md` §7, 사용자 시작 확인·Tripo 로그인 대기). Blender 스크립트 부품(§6)은 [폐기·대체] · 예전 메모 = 얼굴 표정 그림(아트 채팅 ComfyUI) · 가발·베레모·트렌치 로우폴리(PC Blender) — `docs/plan/char3d-test-01-mannequin.md` §4. 원래 계획: "Family Time 느낌" 방법(tech-plan §5-4)으로 기숙생 1명: 로우폴리 몸(Blender 또는 Tripo 로우폴리) + 그린 얼굴 텍스처 → 시험 복도에 세움 → 낮·밤 손전등 정지 화면 · 표정 3개 · 걷기 10초. PC 필요(`docs/pc-setup.md`)
 3. 사용자 결정 대기: 건물 이름 · 메인 기숙생 고르기 · 게임 길이 · 가제 · 밤 방식(어두운 빛 / 거친 저해상도) · 정확한 등신(작업값 5.5)
 
 ## 최근 완료
