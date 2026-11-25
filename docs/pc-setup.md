@@ -4,7 +4,7 @@
 
 ## 1. 받기
 ```
-git clone https://github.com/<사용자>/dorm-horror.git
+git clone https://github.com/leejihoun12z-tech/dorm-horror.git
 ```
 - 이미 있는 Godot **4.7.2**로 이 폴더를 열고 F5 → 시험 복도에서 WASD·스페이스·Shift·E·F가 되는지 확인.
 
