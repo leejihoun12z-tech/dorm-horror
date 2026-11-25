@@ -6,13 +6,38 @@ const CORRIDOR_WIDTH: float = 2.6
 const WALL_HEIGHT: float = 2.7
 const DOOR_SPACING: float = 6.0
 
+@export var spawn_mannequin: bool = true
+@export var mannequin_stage: int = 1
+
 @onready var prompt_label: Label = $HUD/Prompt
 @onready var player: Player = $Player
+@onready var world_env: WorldEnvironment = $WorldEnvironment
+
+var lamps: Array[OmniLight3D] = []
+var mannequin: Mannequin = null
+var is_night: bool = false
 
 func _ready() -> void:
 	_build_corridor()
 	player.look_target_changed.connect(_on_look_target_changed)
 	prompt_label.text = ""
+	if spawn_mannequin:
+		mannequin = Mannequin.new()
+		mannequin.stage = mannequin_stage
+		mannequin.position = Vector3(0.0, 0.0, -8.0)
+		add_child(mannequin)
+		mannequin.watcher = player.camera
+
+## 밤: 복도 불 끔 · 푸른 어둠 · 손전등 켬. 낮: 반대.
+func set_night(on: bool) -> void:
+	is_night = on
+	for lamp: OmniLight3D in lamps:
+		lamp.visible = not on
+	var env: Environment = world_env.environment
+	env.background_color = Color(0.02, 0.025, 0.05) if on else Color(0.85, 0.82, 0.75)
+	env.ambient_light_color = Color(0.35, 0.42, 0.65) if on else Color(1.0, 0.96, 0.88)
+	env.ambient_light_energy = 0.08 if on else 0.55
+	player.flashlight.visible = on
 
 func _build_corridor() -> void:
 	var floor_mat := _mat(Color(0.82, 0.74, 0.6))
@@ -41,6 +66,7 @@ func _build_corridor() -> void:
 		lamp.light_energy = 1.4
 		lamp.light_color = Color(1.0, 0.95, 0.85)
 		add_child(lamp)
+		lamps.append(lamp)
 
 func _door(at: Vector3, side: float, mat: StandardMaterial3D, prompt_text: String) -> void:
 	var door := Interactable.new()
