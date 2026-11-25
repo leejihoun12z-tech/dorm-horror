@@ -5,6 +5,8 @@ render_mode diffuse_toon, specular_toon;
 uniform vec4 base_color : source_color = vec4(1.0);
 uniform float roughness_value : hint_range(0.0, 1.0) = 0.6;
 uniform float specular_value : hint_range(0.0, 1.0) = 0.5;
+// 실제 부품(glb): 색을 면마다 칠한 정점 색으로 받음
+uniform bool use_vcol = false;
 uniform bool use_tip = false;
 uniform vec4 tip_color : source_color = vec4(0.8, 0.08, 0.14, 1.0);
 uniform float tip_y = 0.0;
@@ -21,7 +23,7 @@ void vertex() {
 }
 
 void fragment() {
-	vec3 col = base_color.rgb;
+	vec3 col = use_vcol ? COLOR.rgb * base_color.rgb : base_color.rgb;
 	if (use_tip) {
 		float t = smoothstep(tip_y + tip_soft, tip_y - tip_soft, local_pos.y);
 		col = mix(col, tip_color.rgb, t);

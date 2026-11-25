@@ -12,14 +12,16 @@ _마지막 갱신: 2026-11-26_
 
 ## 다음 할 일
 1. **회색 상자 판** (tech-plan §4): 하루 흐름(아침 사감실 업무 → 낮 수리·민원 → 점호 → 심야 순찰 → 일지·회귀)을 그림 없이 돌아가게
-2. 3D 캐릭터 1명 시험(마네킹, 블록아웃 끝) → **실제 모델로 바꾸기**: 얼굴 표정 그림(아트 채팅 ComfyUI) · 가발·베레모·트렌치 로우폴리(PC Blender) — `docs/plan/char3d-test-01-mannequin.md` §4. 원래 계획: "Family Time 느낌" 방법(tech-plan §5-4)으로 기숙생 1명: 로우폴리 몸(Blender 또는 Tripo 로우폴리) + 그린 얼굴 텍스처 → 시험 복도에 세움 → 낮·밤 손전등 정지 화면 · 표정 3개 · 걷기 10초. PC 필요(`docs/pc-setup.md`)
+2. 3D 캐릭터 1명 시험(마네킹) → **실제 모델로 바꾸기**: 옷·머리 부품 1차 끝(Blender 스크립트, `char3d-test-01-mannequin.md` §6) · 남은 것 = 얼굴 표정 그림(아트 채팅 ComfyUI) · 가발·베레모·트렌치 로우폴리(PC Blender) — `docs/plan/char3d-test-01-mannequin.md` §4. 원래 계획: "Family Time 느낌" 방법(tech-plan §5-4)으로 기숙생 1명: 로우폴리 몸(Blender 또는 Tripo 로우폴리) + 그린 얼굴 텍스처 → 시험 복도에 세움 → 낮·밤 손전등 정지 화면 · 표정 3개 · 걷기 10초. PC 필요(`docs/pc-setup.md`)
 3. 사용자 결정 대기: 건물 이름 · 메인 기숙생 고르기 · 게임 길이 · 가제 · 밤 방식(어두운 빛 / 거친 저해상도) · 정확한 등신(작업값 5.5)
 
 ## 최근 완료
+- 2026-11-26: **마네킹 실제 부품 1차** — Blender 스크립트(`tools/char/build_mannequin_parts.py`)로 가발·베레모·셔츠·리본·치마·트렌치 로우폴리(면 약 1,000, 색 = 면마다 칠한 정점 색) → glb → `mannequin.gd`가 관절에 붙임. PC Godot 4.7.2 정지 화면 확인·오류 0, 어깨 폭·베레모 띠 다듬음. 전후 `docs/plan/img/mannequin_parts_20261126/`. **사람이 보기 전**
 - 2026-11-26: 마네킹 시험 PC 준비 확인 — PC Godot 4.7.2로 `char_shots.gd` 9장 · Blender 5.2.3 명령줄·glb 내보내기 확인 · 새로 설치할 것 없음. 실제 부품 만드는 길 A(Blender 스크립트, 추천)/B(Tripo) 사용자 고르기 대기 (`char3d-test-01-mannequin.md` §5)
 - 2026-11-25: **3D 캐릭터 시험 1 = 마네킹(R27 기준, 사용자)** 블록아웃 — Godot 안에서 부품 조립 로우폴리 + 그린 얼굴 0~3단계 + 빛 받는 툰 + 안 볼 때 자세 바뀜 + 시험 복도 낮/밤. 정지 화면 확인(`docs/plan/img/mannequin_test_20261125/`), 결함 4개 고침. 사람 플레이 전. `docs/plan/char3d-test-01-mannequin.md`
 - 2026-11-25: 새 저장소 초기 프로젝트 — `project.godot`(입력 액션 9개), 1인칭 사감(`game/player/`: 이동·점프·숙이기·시선·상호작용 광선·손전등), 회색 상자 시험 복도(`game/world/`: 방문 6개 여닫기, 바라보면 "[E] 2xx호 문 열기"), 검사 도구 `tools/dev/`. 리눅스 Godot 4.7.1로 오류 0·입력 9개·정지 화면 확인. **사람 조작 확인 전**
 - 2026-11-25: 기획 문서 39개를 `docs/plan/`으로 복사(원본 = MyGodotGame `docs/new-game/`, 이 저장소가 앞으로 기준)
 
 ## 막힌 것 / 확인 필요
+- 구미호로 만든 3D 시험 대역(툰 셰이더·표정 바꾸기 층·시험 장면)은 마네킹 [확정]과 겹쳐 main에 안 넣음 → 브랜치 `char3d-kumiho-placeholder`에 보관(2026-11-26).
 - 캐릭터 그림 원본은 MyGodotGame 저장소에 있음(1.6GB). 필요한 것만 옮기기.

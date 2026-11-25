@@ -13,12 +13,18 @@ const FACE_TEXTURES: Array[String] = [
 	"res://assets/characters/mannequin/face_s2.png",
 	"res://assets/characters/mannequin/face_s3.png",
 ]
+## 실제 부품(로우폴리, Blender): 가발·베레모·셔츠·리본·치마·트렌치. 만드는 도구 tools/char/build_mannequin_parts.py
+const PARTS_SCENE: String = "res://assets/characters/mannequin/mannequin_parts.glb"
+## 부품 광택 종류(glb 재질 이름) → (거칠기, 반사)
+const PART_FINISH: Dictionary = {"hair": Vector2(0.3, 0.8), "gloss": Vector2(0.2, 0.9), "cloth": Vector2(0.7, 0.3), "metal": Vector2(0.3, 0.9)}
 const SEGMENTS: int = 12
 const RINGS: int = 6
 
 @export var stage: int = 0
 @export var unseen_seconds: float = 1.2
 @export var step_toward_watcher: float = 0.0
+## 끄면 예전 블록아웃(도형) 옷·머리로 돌아감 (비교용)
+@export var use_model_parts: bool = true
 var watcher: Camera3D = null
 
 var joints: Dictionary = {}
@@ -136,26 +142,29 @@ func _build() -> void:
 	var brush_wood := _mat(Color(0.1, 0.08, 0.09), 0.3, 0.6)
 	var brush_tip := _mat(Color(0.95, 0.85, 0.82), 0.8, 0.2)
 
+	var model: bool = use_model_parts and ResourceLoader.exists(PARTS_SCENE)
 	var hips := _joint(self, "hips", Vector3(0, 0.66, 0))
 	_part(hips, _sphere(0.12, 0.17), plastic, Vector3(0, 0.03, 0), Vector3(1.05, 1.0, 0.85))
 	var spine := _joint(hips, "spine", Vector3(0, 0.12, 0))
 	var chest := _joint(spine, "chest", Vector3(0, 0.17, 0))
-	# 흰 셔츠 상체 + 검정 하이웨이스트 치마(금 단추)
-	_part(chest, _cyl(0.122, 0.092, 0.24), shirt, Vector3(0, 0.1, 0), Vector3(1.0, 1.0, 0.82))
-	for side: float in [-1.0, 1.0]:
-		_part(chest, _sphere(0.046), shirt, Vector3(side * 0.048, 0.115, 0.05))
-	_part(spine, _cyl(0.094, 0.11, 0.2), black, Vector3(0, 0.06, 0), Vector3(1.0, 1.0, 0.86))
-	_part(hips, _cyl(0.112, 0.17, 0.26), black, Vector3(0, -0.04, 0))
-	for k: int in range(3):
+	# 흰 셔츠 상체 + 검정 하이웨이스트 치마(금 단추) — 실제 부품이 있으면 그쪽을 씀
+	if not model:
+		_part(chest, _cyl(0.122, 0.092, 0.24), shirt, Vector3(0, 0.1, 0), Vector3(1.0, 1.0, 0.82))
 		for side: float in [-1.0, 1.0]:
-			_part(spine, _sphere(0.011), gold, Vector3(side * 0.035, 0.0 + k * 0.05, 0.088))
+			_part(chest, _sphere(0.046), shirt, Vector3(side * 0.048, 0.115, 0.05))
+		_part(spine, _cyl(0.094, 0.11, 0.2), black, Vector3(0, 0.06, 0), Vector3(1.0, 1.0, 0.86))
+		_part(hips, _cyl(0.112, 0.17, 0.26), black, Vector3(0, -0.04, 0))
+		for k: int in range(3):
+			for side: float in [-1.0, 1.0]:
+				_part(spine, _sphere(0.011), gold, Vector3(side * 0.035, 0.0 + k * 0.05, 0.088))
 	# 깃·줄무늬 리본·빨간 보석
 	var neck := _joint(chest, "neck", Vector3(0, 0.24, 0))
 	_part(neck, _cyl(0.05, 0.06, 0.05), shirt, Vector3(0, -0.02, 0))
-	_part(neck, _box(Vector3(0.09, 0.035, 0.02)), black, Vector3(0, -0.04, 0.055))
-	_part(neck, _box(Vector3(0.03, 0.09, 0.018)), black, Vector3(0.008, -0.09, 0.06), Vector3.ONE, Vector3(0, 0, 0.15))
-	_part(neck, _box(Vector3(0.012, 0.09, 0.02)), red, Vector3(0.008, -0.09, 0.062), Vector3.ONE, Vector3(0, 0, 0.15))
-	_part(neck, _sphere(0.016), red, Vector3(0, -0.04, 0.068))
+	if not model:
+		_part(neck, _box(Vector3(0.09, 0.035, 0.02)), black, Vector3(0, -0.04, 0.055))
+		_part(neck, _box(Vector3(0.03, 0.09, 0.018)), black, Vector3(0.008, -0.09, 0.06), Vector3.ONE, Vector3(0, 0, 0.15))
+		_part(neck, _box(Vector3(0.012, 0.09, 0.02)), red, Vector3(0.008, -0.09, 0.062), Vector3.ONE, Vector3(0, 0, 0.15))
+		_part(neck, _sphere(0.016), red, Vector3(0, -0.04, 0.068))
 	_part(neck, _sphere(0.04), metal, Vector3(0, 0.0, 0))
 	_part(neck, _cyl(0.034, 0.036, 0.09), plastic, Vector3(0, 0.05, 0))
 	# 머리: 그린 얼굴
@@ -165,27 +174,28 @@ func _build() -> void:
 	_face_mat.set_shader_parameter("face_center", Vector2(0.0, 0.0))
 	_face_mat.set_shader_parameter("face_size", Vector2(0.2, 0.2))
 	_part(head, _sphere(0.135, 0.29), _face_mat, Vector3(0, 0.12, 0))
-	# 검정 단발 + 빨간 끝·브릿지
-	var back_hair := _part(head, _sphere(0.152, 0.3), hair, Vector3(0, 0.15, -0.03))
-	(back_hair.material_override as ShaderMaterial).set_shader_parameter("tip_y", -0.1)
-	_part(head, _sphere(0.138, 0.09), _mat(Color(0.07, 0.06, 0.08), 0.3, 0.8), Vector3(0, 0.215, 0.06), Vector3(1.0, 1.0, 0.62))
-	_part(head, _capsule(0.011, 0.15), red, Vector3(0.085, 0.13, 0.1), Vector3.ONE, Vector3(0.25, 0, 0.18))
-	for side: float in [-1.0, 1.0]:
-		var sm := _mat(Color(0.07, 0.06, 0.08), 0.3, 0.8)
-		sm.set_shader_parameter("use_tip", true)
-		sm.set_shader_parameter("tip_color", Color(0.78, 0.07, 0.12))
-		sm.set_shader_parameter("tip_y", -0.085)
-		_part(head, _capsule(0.05, 0.25), sm, Vector3(side * 0.125, 0.09, 0.0), Vector3(0.8, 1.0, 1.0), Vector3(0, 0, side * 0.14))
-	# 빨간 베레모(오른쪽으로 기울임) + 금 장식
-	_part(head, _sphere(0.125, 0.06), red, Vector3(0.035, 0.3, -0.03), Vector3(1.0, 1.0, 1.0), Vector3(0.05, 0, -0.3))
-	_part(head, _box(Vector3(0.03, 0.03, 0.01)), gold, Vector3(-0.08, 0.26, 0.09), Vector3.ONE, Vector3(0, 0, 0.7))
-	# 트렌치코트: 어깨에 걸침, 앞이 열림, 바깥 검정·안 빨강 + 금 십자 장식
-	var coat_out := _part(chest, _open_cone(0.17, 0.3, 0.78, 80.0, false), black, Vector3(0, -0.17, -0.01))
-	coat_out.material_override = black
-	_part(chest, _open_cone(0.17, 0.3, 0.78, 80.0, true), red, Vector3(0, -0.17, -0.01))
-	for side: float in [-1.0, 1.0]:
-		_part(chest, _box(Vector3(0.035, 0.012, 0.012)), gold, Vector3(side * 0.19, -0.05, 0.08))
-		_part(chest, _box(Vector3(0.012, 0.035, 0.012)), gold, Vector3(side * 0.19, -0.05, 0.08))
+	if not model:
+		# 검정 단발 + 빨간 끝·브릿지
+		var back_hair := _part(head, _sphere(0.152, 0.3), hair, Vector3(0, 0.15, -0.03))
+		(back_hair.material_override as ShaderMaterial).set_shader_parameter("tip_y", -0.1)
+		_part(head, _sphere(0.138, 0.09), _mat(Color(0.07, 0.06, 0.08), 0.3, 0.8), Vector3(0, 0.215, 0.06), Vector3(1.0, 1.0, 0.62))
+		_part(head, _capsule(0.011, 0.15), red, Vector3(0.085, 0.13, 0.1), Vector3.ONE, Vector3(0.25, 0, 0.18))
+		for side: float in [-1.0, 1.0]:
+			var sm := _mat(Color(0.07, 0.06, 0.08), 0.3, 0.8)
+			sm.set_shader_parameter("use_tip", true)
+			sm.set_shader_parameter("tip_color", Color(0.78, 0.07, 0.12))
+			sm.set_shader_parameter("tip_y", -0.085)
+			_part(head, _capsule(0.05, 0.25), sm, Vector3(side * 0.125, 0.09, 0.0), Vector3(0.8, 1.0, 1.0), Vector3(0, 0, side * 0.14))
+		# 빨간 베레모(오른쪽으로 기울임) + 금 장식
+		_part(head, _sphere(0.125, 0.06), red, Vector3(0.035, 0.3, -0.03), Vector3(1.0, 1.0, 1.0), Vector3(0.05, 0, -0.3))
+		_part(head, _box(Vector3(0.03, 0.03, 0.01)), gold, Vector3(-0.08, 0.26, 0.09), Vector3.ONE, Vector3(0, 0, 0.7))
+		# 트렌치코트: 어깨에 걸침, 앞이 열림, 바깥 검정·안 빨강 + 금 십자 장식
+		var coat_out := _part(chest, _open_cone(0.17, 0.3, 0.78, 80.0, false), black, Vector3(0, -0.17, -0.01))
+		coat_out.material_override = black
+		_part(chest, _open_cone(0.17, 0.3, 0.78, 80.0, true), red, Vector3(0, -0.17, -0.01))
+		for side: float in [-1.0, 1.0]:
+			_part(chest, _box(Vector3(0.035, 0.012, 0.012)), gold, Vector3(side * 0.19, -0.05, 0.08))
+			_part(chest, _box(Vector3(0.012, 0.035, 0.012)), gold, Vector3(side * 0.19, -0.05, 0.08))
 	# 팔
 	for side: float in [-1.0, 1.0]:
 		var key: String = "l" if side < 0.0 else "r"
@@ -214,8 +224,36 @@ func _build() -> void:
 		var an := _joint(kn, key + "_ankle", Vector3(0, -0.29, 0))
 		_part(an, _sphere(0.032), metal, Vector3.ZERO)
 		_part(an, _sphere(0.05, 0.07), black, Vector3(0, -0.035, 0.04), Vector3(0.85, 1.0, 1.7))
+	if model:
+		_attach_model_parts()
 	for k: String in joints.keys():
 		_base_rot[k] = (joints[k] as Node3D).rotation
+
+## glb 안 물체 "<관절>__<부품>"을 그 관절 밑에 붙인다. 색 = 정점 색, 광택 = 재질 이름.
+func _attach_model_parts() -> void:
+	var inst: Node = (load(PARTS_SCENE) as PackedScene).instantiate()
+	var finish_mats: Dictionary = {}
+	for node: Node in inst.find_children("*", "MeshInstance3D", true, false):
+		var src: MeshInstance3D = node
+		var key: String = String(src.name).get_slice("__", 0)
+		if not joints.has(key):
+			push_warning("마네킹 부품 관절 없음: %s" % src.name)
+			continue
+		var part := MeshInstance3D.new()
+		part.name = src.name
+		part.mesh = src.mesh
+		part.transform = src.transform
+		for s: int in range(src.mesh.get_surface_count()):
+			var m: Material = src.mesh.surface_get_material(s)
+			var kind: String = m.resource_name if m != null and PART_FINISH.has(m.resource_name) else "cloth"
+			if not finish_mats.has(kind):
+				var f: Vector2 = PART_FINISH[kind]
+				var mat := _mat(Color.WHITE, f.x, f.y)
+				mat.set_shader_parameter("use_vcol", true)
+				finish_mats[kind] = mat
+			part.set_surface_override_material(s, finish_mats[kind])
+		(joints[key] as Node3D).add_child(part)
+	inst.free()
 
 func set_stage(s: int) -> void:
 	stage = clampi(s, 0, 3)
