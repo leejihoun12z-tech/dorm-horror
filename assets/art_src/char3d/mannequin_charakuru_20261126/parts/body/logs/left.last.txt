@@ -1,0 +1,1 @@
+SOURCE=C:/Users/leeji/.codex/generated_images/01a21860-704c-7a21-aa78-1c87f8bdcc8c/exec-d14d5503-2dcb-46fc-97f7-606cce6ae0aa.png OUT=NOT_COPIED (read-only workspace)

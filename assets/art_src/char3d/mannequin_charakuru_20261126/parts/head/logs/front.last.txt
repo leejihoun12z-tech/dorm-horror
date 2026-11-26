@@ -1,0 +1,1 @@
+SOURCE=C:/Users/leeji/.codex/generated_images/01a21852-780e-79f2-bffd-47a2b9dc9e70/exec-b0cd8a9a-8b65-4e5f-bd92-113d46abbe93.png OUT=<copy to front.png blocked by read-only workspace>
