@@ -53,3 +53,5 @@ Blender 연결 도구(MCP) — 화면 보며 조작 · VRM Add-on + godot-vrm �
 | Blender MCP | **설치 못 함** — 자동 권한 검사가 막음. Charakuru는 Blender를 뒤에서 스크립트로 돌려 MCP 없이 됨. 필요하면 사용자가 직접 `uvx mcp-for-blender setup` |
 - 받은 원본: `C:\Users\leeji\ck\dl\` (키트 ZIP·기술 노트·VRM 애드온 ZIP·godot-vrm·blender-mcp 저장소).
 - 아직 안 한 것: Charakuru로 캐릭터 1명 만들기(Tripo 500~940크레딧) · 크롬 "다운로드 전 저장 위치 묻기"가 켜져 있으면 끄기(사용자).
+
+- **비율 (2026-11-27 바로잡음):** Charakuru로 만들 때 전신 삼면도 지시문과 머리·몸 조립 크기는 art-bible의 데포르메 5~6등신 [작업값 5.5]로 맞춘다. 원본 시트가 큰 머리 비율이어도 따라가지 않는다. 머리·몸은 따로 생성되므로 비율은 조립 때 머리 크기로 조절(마네킹 기준 5.5등신 = 머리 0.336).
