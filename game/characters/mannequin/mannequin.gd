@@ -13,7 +13,11 @@ const FACE_TEXTURES: Array[String] = [
 	"res://assets/characters/mannequin/face_s2.png",
 	"res://assets/characters/mannequin/face_s3.png",
 ]
-## 실제 부품(로우폴리, Blender): 가발·베레모·셔츠·리본·치마·트렌치. 만드는 도구 tools/char/build_mannequin_parts.py
+## Tripo 3D 모델(W2, 얼굴 없는 판)을 관절별 부품으로 자른 것. 만드는 도구 tools/char/prep_tripo_mannequin.py
+## 물체 이름 "<관절>__<부품>", 관절 위치는 json. 색 = 정점 색, 얼굴 = 셰이더가 얼굴 그림을 덮음
+const TRIPO_SCENE: String = "res://assets/characters/mannequin/mannequin_tripo.glb"
+const TRIPO_JSON: String = "res://assets/characters/mannequin/mannequin_tripo.json"
+## [폐기·대체] Blender 스크립트 도형 부품 (비교용으로만 남김). 만드는 도구 tools/char/build_mannequin_parts.py
 const PARTS_SCENE: String = "res://assets/characters/mannequin/mannequin_parts.glb"
 ## 부품 광택 종류(glb 재질 이름) → (거칠기, 반사)
 const PART_FINISH: Dictionary = {"hair": Vector2(0.3, 0.8), "gloss": Vector2(0.2, 0.9), "cloth": Vector2(0.7, 0.3), "metal": Vector2(0.3, 0.9)}
@@ -23,12 +27,17 @@ const RINGS: int = 6
 @export var stage: int = 0
 @export var unseen_seconds: float = 1.2
 @export var step_toward_watcher: float = 0.0
-## 끄면 예전 블록아웃(도형) 옷·머리로 돌아감 (비교용)
+## Tripo 모델 사용 (끄면 아래 블록아웃)
+@export var use_tripo_model: bool = true
+## 블록아웃일 때: 끄면 예전 도형 옷·머리 (비교용)
 @export var use_model_parts: bool = true
 var watcher: Camera3D = null
 
 var joints: Dictionary = {}
 var _base_rot: Dictionary = {}
+var _base_pos: Dictionary = {}
+## 3단계에서 머리를 뒤집을 때 올려 주는 높이 (머리 관절 위로 머리 끝까지)
+var _head_height: float = 0.36
 var _face_mat: ShaderMaterial
 var _unseen_time: float = 0.0
 var _was_seen: bool = true
@@ -39,7 +48,10 @@ var _shader: Shader = preload("res://game/characters/char_toon.gdshader")
 
 func _ready() -> void:
 	_rng.seed = 7
-	_build()
+	if use_tripo_model and ResourceLoader.exists(TRIPO_SCENE) and FileAccess.file_exists(TRIPO_JSON):
+		_build_tripo()
+	else:
+		_build()
 	set_stage(stage)
 
 func _mat(color: Color, rough: float, spec: float) -> ShaderMaterial:
@@ -226,8 +238,7 @@ func _build() -> void:
 		_part(an, _sphere(0.05, 0.07), black, Vector3(0, -0.035, 0.04), Vector3(0.85, 1.0, 1.7))
 	if model:
 		_attach_model_parts()
-	for k: String in joints.keys():
-		_base_rot[k] = (joints[k] as Node3D).rotation
+	_store_rest()
 
 ## glb 안 물체 "<관절>__<부품>"을 그 관절 밑에 붙인다. 색 = 정점 색, 광택 = 재질 이름.
 func _attach_model_parts() -> void:
@@ -255,6 +266,64 @@ func _attach_model_parts() -> void:
 		(joints[key] as Node3D).add_child(part)
 	inst.free()
 
+func _store_rest() -> void:
+	for k: String in joints.keys():
+		_base_rot[k] = (joints[k] as Node3D).rotation
+		_base_pos[k] = (joints[k] as Node3D).position
+
+## Tripo 모델: json의 관절 위치로 관절을 세우고, glb의 부품을 이름대로 붙인다
+func _build_tripo() -> void:
+	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(TRIPO_JSON))
+	var jd: Dictionary = data["joints"]
+	var world_pos: Dictionary = {}
+	for key: String in jd.keys():
+		var p: Array = jd[key]["pos"]
+		world_pos[key] = Vector3(p[0], p[1], p[2])
+	# 부모가 먼저 만들어지도록 json 순서(부모 → 자식)대로
+	for key: String in jd.keys():
+		var parent_key = jd[key]["parent"]
+		var parent: Node3D = self if parent_key == null else joints[parent_key]
+		var parent_pos: Vector3 = Vector3.ZERO if parent_key == null else world_pos[parent_key]
+		_joint(parent, key, world_pos[key] - parent_pos)
+	var face: Dictionary = data["face"]
+	_face_mat = _mat(Color.WHITE, 0.4, 0.5)
+	_face_mat.set_shader_parameter("use_vcol", true)
+	_face_mat.set_shader_parameter("use_face", true)
+	_face_mat.set_shader_parameter("face_center", Vector2(face["center"][0], face["center"][1]))
+	_face_mat.set_shader_parameter("face_size", Vector2(face["size"], face["size"]))
+	var finish_mats: Dictionary = {}
+	var inst: Node = (load(TRIPO_SCENE) as PackedScene).instantiate()
+	var head_top: float = 0.0
+	for node: Node in inst.find_children("*", "MeshInstance3D", true, false):
+		var src: MeshInstance3D = node
+		var key: String = String(src.name).get_slice("__", 0)
+		var part_name: String = String(src.name).get_slice("__", 1)
+		if not joints.has(key):
+			push_warning("마네킹 부품 관절 없음: %s" % src.name)
+			continue
+		var part := MeshInstance3D.new()
+		part.name = src.name
+		part.mesh = src.mesh
+		for s: int in range(src.mesh.get_surface_count()):
+			if part_name == "face":
+				part.set_surface_override_material(s, _face_mat)
+				continue
+			var m: Material = src.mesh.surface_get_material(s)
+			var kind: String = m.resource_name if m != null and PART_FINISH.has(m.resource_name) else "cloth"
+			if not finish_mats.has(kind):
+				var f: Vector2 = PART_FINISH[kind]
+				var mat := _mat(Color.WHITE, f.x, f.y)
+				mat.set_shader_parameter("use_vcol", true)
+				finish_mats[kind] = mat
+			part.set_surface_override_material(s, finish_mats[kind])
+		(joints[key] as Node3D).add_child(part)
+		if key == "head":
+			head_top = maxf(head_top, src.mesh.get_aabb().end.y)
+	inst.free()
+	if head_top > 0.0:
+		_head_height = head_top
+	_store_rest()
+
 func set_stage(s: int) -> void:
 	stage = clampi(s, 0, 3)
 	_face_mat.set_shader_parameter("face_tex", load(FACE_TEXTURES[stage]))
@@ -265,7 +334,7 @@ func set_stage(s: int) -> void:
 	if stage >= 3:
 		var head: Node3D = joints["head"]
 		head.rotation = Vector3(0, 0, PI)
-		head.position = Vector3(0, 0.36, 0)
+		head.position = _base_pos["head"] + Vector3(0, _head_height, 0)
 		var el: Node3D = joints["l_elbow"]
 		el.rotation = Vector3(deg_to_rad(-70), 0, deg_to_rad(40))
 		(joints["r_knee"] as Node3D).rotation.x = deg_to_rad(-45)
@@ -274,7 +343,7 @@ func set_stage(s: int) -> void:
 func _reset_pose() -> void:
 	for k: String in joints.keys():
 		(joints[k] as Node3D).rotation = _base_rot[k]
-	(joints["head"] as Node3D).position = Vector3(0, 0.1, 0)
+		(joints[k] as Node3D).position = _base_pos[k]
 
 func is_seen_by(cam: Camera3D) -> bool:
 	var head: Node3D = joints["head"]
