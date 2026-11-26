@@ -283,3 +283,11 @@ _방법: "Family Time 느낌" (tech-plan §5-4) — 로우폴리 + 그린 얼굴
 | 이미지 → VRM 생성기(Neural4D AnimeArt 등) · VRoid Studio | 표정·뼈대 포함 애니 캐릭터 | 형태가 처음부터 깨끗 | 업체 주장 위주(미검증) · 로우폴리 결 아님 |
 출처: tripo3d.ai/blog/auto-split-model-into-parts · developers.tripo3d.ai/en/pricing · arxiv 2506.05573(PartCrafter, HoloPart 언급) · github.com/shitagaki-lab/see-through · github.com/jtydhr88/ComfyUI-See-through · github.com/IgorAherne/StableProjectorz · github.com/Zaws77/StableGen · mindstudio.ai/blog/claude-blender-mcp-real-world-performance · 3daistudio.com(blender-mcp 한계) · neural4d.com/features/animeart
 추천 순서 [후보]: ① Part Completion(싸고 원인에 정확히 대응) → ② 안 되면 See-through로 2D에서 나눈 뒤 부위별 생성 → ③ 무늬가 더 필요하면 투영 텍스처 도구. Blender MCP는 검수 속도용으로 따로.
+
+### 7-17. Tripo 부위 보완 시험 (2026-11-26, 사용자 "부위 보완 시험")
+- Tripo Studio 「파트 보완」(fill-parts) → 보완 모드 「파트 보완」(「빠른 막기」 아님) → 전체 부위 한 번에, 약 4~5분. **크레딧 차감 없었음**(2,910 그대로, Pro 구독 기준 · 왕관 표시 기능).
+- 얼굴 있는 모델(`mq_tripo_W2_parts_filled.glb`, 면 29만 → 44만): **머리카락이 찢긴 가장자리 없이 닫힌 덩어리**가 됨(앞머리 깨끗) · 얼굴 조각 → 목 달린 온전한 머리통(단 눈·코가 조각된 얼굴). 전후 `img/mannequin_tripo_20261126/part_fill_before_after.jpg`.
+- 얼굴 없는 모델(리토폴로지 1만 면 판, `mq_tripo_W2_noface_filled.glb`): 얼굴판은 두께만 생기고 온전한 머리통은 안 됨.
+- 조합 시험 `part_fill_combo.jpg`: 보완된 머리(얼굴 있는 모델) + 매끈한 얼굴판(얼굴 없는 모델) → 머리가 속이 찬 덩어리라 구멍이 안 보이고 앞머리·얼굴 경계가 깨끗(회색 모양만 확인, 게임 적용 전).
+- 결론: 찢김의 원인은 "나누기만 하고 보완을 안 한 것"이 맞음. 앞으로 순서 = 생성 → 나누기 → **보완** → (필요한 부위만) 면 줄이기.
+- 다음: 보완된 머리를 게임 모델에 넣기(머리 색 = 검정 + 브릿지 빨강을 새 방식으로) · 다른 부위(코트·셔츠 등)도 보완판으로 바꿀지 확인.
