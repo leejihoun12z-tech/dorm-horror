@@ -344,3 +344,10 @@ _방법: "Family Time 느낌" (tech-plan §5-4) — 로우폴리 + 그린 얼굴
 - GPT: 원래 일러스트(R27_2) → 3면 시트, 원신풍 3D 셀 렌더 · 5.5등신 · A자세 · 원래 디자인 그대로(로봇 관절·귀걸이·코트 버클·빨간 손톱) · 하늘색 바탕(흰 손발 구분). `assets/art_src/char3d/mannequin_v3_genshin_20261126/sheet_genshin.png`.
 - 비교 `img/mannequin_tripo_20261126/style_genshin_compare.jpg`: 원래 일러스트 / 단순화 v2 / 원신풍. 원신풍은 얼굴·장식이 원래 일러스트에 가깝고 손가락·관절 구체까지 있음. Charakuru 입력용 [후보], 3D 생성은 아직 안 함.
 - 걸리는 것: 코트 버클·관절 구체 줄무늬 같은 작은 장식이 많아 Tripo 텍스처에서 번질 수 있음 · 옆·뒤 칸 디자인이 앞과 조금 다름(뒤 코트 모양) → 키트 요령대로 앞 1장 위주로 넣는 편이 안전.
+
+### 7-25. 스카우트 덧붙임 2 (2026-11-26, `Projects/Scout/notes/handoff/기숙사-2026-11-26.md` 맨 아래)
+- Charakuru 결과가 무거움: 1.9만~9.3만 삼각형(Tripo 분할 때문에 삼각면), VRM 최대 55MB → 로우폴리 결이면 줄이기 단계 따로.
+- **Claude Code로 돌리는 비공식 스킬 kokushin/charakuru-claude-code (MIT, 한국어 README)** — 그림 만들기만 Codex CLI. 실제 1체 500크레딧. Tripo Free로는 끝까지 못 함(Pro 필요 — 우리는 Pro).
+- HairDeck (Apache-2.0): 그림 1장 → 애니 머리카락 카드 + 흔들림 뼈 → GLB/VRM, 8GB 그래픽카드 확인. 머리카락만이라 몸에 옮겨 붙여야 함.
+- Claude만으로: saka2jp(bpy 스크립트 1개 → VRM 1.0·MToon·흔들림·표정 12개, 사용권 없음 → 보고 배우기만) · Zenn yy7613(Opus 5.5 + MPFB2 얼굴 토폴로지).
+- ✕ Neural4D AnimeArt(약관상 상업 불가).
