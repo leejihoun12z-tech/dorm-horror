@@ -271,3 +271,15 @@ _방법: "Family Time 느낌" (tech-plan §5-4) — 로우폴리 + 그린 얼굴
 고친 것: `merge_inner_pass.py` `full_head()` — 공에서 시작해 중심에서 광선을 쏴 얼굴판에 맞으면 그 자리, 아니면 머리카락 안쪽 93%까지 → **온전한 머리통**. 목·깃은 원래 얼굴판을 5% 줄여 안에 둠. `split_tripo_textured.py`는 물체 이름(outer_/inner_)을 그대로 씀. 얼굴 그림 다시 오림.
 결과 `full_head_before_after.jpg`(위 전·아래 후): 눈 옆 검은 덩어리·구멍 없어짐, 눈꼬리 선이 끝까지 나옴. 코·입 굴곡은 사라짐(그림으로만 표현).
 남은 것: **앞머리 가장자리 톱니(찢긴 머리 모양)는 그대로** — 모양을 다시 받아야 함. 후보: Tripo 「파트 보완」(나눈 부위의 가려진 면 채우기, 미확인) / 머리카락을 얼굴 없는 판과 같은 생성에서 받기 / 원본 통짜 머리(나누기 전)에서 얼굴 쪽만 잘라내기.
+
+### 7-16. 더 깔끔하게 하는 방법 조사 (2026-11-26, 사용자 "블렌더에서 직접 손보는 방식이든 뭐든 · 최신 방식 찾아봐") — 조사만, 시험 전
+| 방법 | 무엇 | 우리 문제에 맞는 점 | 한계·미확인 |
+|---|---|---|---|
+| Tripo **Part Completion**(부위 보완) | 부위로 나눈 뒤 잘려 열린 면을 생성해 닫힌 부위로 만듦(나누기 뒤에만 가능, Studio +5크레딧/부위로 안내됨) | 찢긴 앞머리·조각뿐인 얼굴판이 바로 "나누기만 하고 보완을 안 한" 결과 → 가장 직접적 | 우리 모델에 써 본 적 없음 · 복잡한 부위는 결과 확인 필요 |
+| HoloPart (오픈소스, MIT로 소개됨) | 3D를 나눈 뒤 가려진 부분을 3D 확산으로 채움 | Tripo 없이 같은 일 | 로컬 설치·VRAM·애니 캐릭터 품질 미확인 |
+| Blender MCP (Claude가 Blender를 직접 조작·화면 캡처) | 단계마다 화면을 보며 조작 | 내가 "그림으로만 보는" 약점을 줄임 · 일괄 정리·재질 작업에 좋음 | 조각(스컬프트)·깨끗한 면 흐름·리깅은 안 됨(여러 글 공통) → 찢긴 머리는 못 고침 · 설치 필요 |
+| See-through (SIGGRAPH 2026, ComfyUI 플러그인) | 애니 그림 1장 → 앞머리·뒷머리·얼굴·옷 등 최대 23겹으로 나누고 가려진 곳을 채움(2.5D) | 3D로 보내기 전에 2D에서 부위를 온전히 나눔 → 부위별 3D 생성의 입력으로 | 3D가 아님 · 데포르메 3D풍 그림에 되는지 미확인 · 8GB는 NF4 판 |
+| StableProjectorz · StableGen · ComfyUI 투영 텍스처 노드 | 우리 ComfyUI 모델로 3D에 직접 투영해 칠함(깊이로 번짐 방지) | Tripo 텍스처 대신 우리 그림체로, 방향마다 사람이 고치며 칠함 | 평면 색 애니풍 사례는 못 찾음 · 설치 필요 |
+| 이미지 → VRM 생성기(Neural4D AnimeArt 등) · VRoid Studio | 표정·뼈대 포함 애니 캐릭터 | 형태가 처음부터 깨끗 | 업체 주장 위주(미검증) · 로우폴리 결 아님 |
+출처: tripo3d.ai/blog/auto-split-model-into-parts · developers.tripo3d.ai/en/pricing · arxiv 2506.05573(PartCrafter, HoloPart 언급) · github.com/shitagaki-lab/see-through · github.com/jtydhr88/ComfyUI-See-through · github.com/IgorAherne/StableProjectorz · github.com/Zaws77/StableGen · mindstudio.ai/blog/claude-blender-mcp-real-world-performance · 3daistudio.com(blender-mcp 한계) · neural4d.com/features/animeart
+추천 순서 [후보]: ① Part Completion(싸고 원인에 정확히 대응) → ② 안 되면 See-through로 2D에서 나눈 뒤 부위별 생성 → ③ 무늬가 더 필요하면 투영 텍스처 도구. Blender MCP는 검수 속도용으로 따로.
