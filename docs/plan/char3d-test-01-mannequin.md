@@ -381,3 +381,10 @@ _방법: "Family Time 느낌" (tech-plan §5-4) — 로우폴리 + 그린 얼굴
 - 결과(정지 렌더 비교 `img/mannequin_tripo_20261126/smart_vs_hd_views.jpg`, 확대 `smart_tex_closeups.jpg`): 지금 게임판(HD 생성 §7-19)보다 **면이 깨끗**(코트 뒤 붉은 얼룩·찢긴 결 없음) · 얼굴 선·리본 보석·금 단추·무릎 관절 선명 · 면 수 1/4 · W2 그림 결(각진 면·평평한 색)에 더 가까움.
 - 남은 것: 손이 조금 뭉툭 · 코트 안 아래 붉은 선 한 줄 · 얼굴이 모양+텍스처로 고정(표정 바꾸기는 따로) · 리깅·걷기·게임 안 확인 전 · 사람 확인 전 [작업값].
 - 다음: Tripo 자동 리깅(면 1.4만이라 리토폴로지 없이 될 가능성) → 걷기 → `RiggedCharacter`로 게임판 교체·비교.
+
+### 7-30. 리본 두 개 고침 + 다시 생성 (2026-11-26, 사용자 "모양 더 다듬어 봐 · 왜 리본이 두 개야")
+- 원인: 넣은 그림 3장의 리본 자리가 서로 달랐음 — 앞 칸은 베레모 **앞쪽 비스듬한 자리**, 옆 칸은 **옆면 가운데(조금 뒤)**. Tripo가 두 자리를 다 살려 리본이 앞·옆에 하나씩 생김(`img/mannequin_tripo_20261126/smart2_beret_bows.png` 맨 윗줄).
+- 고침: 옆 칸만 GPT로 "리본을 앞쪽 띠 위로 옮기고 빈자리는 베레모·띠·머리로" → 머리 위쪽 상자만 원본에 섞어 붙임 + 베레모 끝 작은 붉은 점 지움 → `assets/art_src/char3d/mannequin_w2fix_20261126/w2r_right_v2.png`, 전후 `img/mannequin_tripo_20261126/side_bow_forward.jpg`. (코드로 옮기기는 빈자리가 번져서 안 씀.)
+- 다시 생성: 스마트 메시 P2.0, 폴리곤 12,000 → **20,000**(모양 다듬기), 4개, 마지막 체험(0크레딧). 후보 4개 모두 **리본 하나**(`smart2_beret_bows.png`, `smart2_candidates.jpg`, `smart2_closeups.jpg`). 얼굴이 가장 깔끔한 **후보 3**(2.1만 면) → 텍스처 20크레딧 → `assets/art_src/char3d/mannequin_smart2_20261126/c2_3_tex.glb`(4.4MB).
+- 비교 `smart2_vs_smart1_views.jpg`, 베레모 `smart2_beret_tex.jpg`, 확대 `smart2_tex_closeups.jpg`.
+- 남은 것: 셔츠 배 쪽에 작은 점 하나(텍스처) · 손가락 선이 조금 번짐 · 리깅·게임 안 확인 전 · 사람 확인 전 [작업값]. 이제 체험이 없어 스마트 메시 다시 생성은 100크레딧.
