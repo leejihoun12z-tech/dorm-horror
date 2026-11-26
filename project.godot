@@ -57,3 +57,7 @@ pause={
 [rendering]
 
 renderer/rendering_method="forward_plus"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/vrm/plugin.cfg")

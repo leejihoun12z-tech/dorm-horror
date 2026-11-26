@@ -39,3 +39,17 @@ _2026-11-26 정리. 근거 = 마네킹 시험 `char3d-test-01-mannequin.md` §7 
 
 ## 도구 후보 (설치는 사용자 승인 뒤)
 Blender 연결 도구(MCP) — 화면 보며 조작 · VRM Add-on + godot-vrm — 흔들림·표정을 VRM으로 갈 때 · Charakuru(Codex) — 한 명 통째 비교용.
+
+## Charakuru 작업 환경 (2026-11-26 설치, 사용자 "다운 필요한 거 다 다운받아")
+| 항목 | 위치·상태 |
+|---|---|
+| Charakuru 키트 1.1.1 (배포 ZIP) | `C:\Users\leeji\ck\kit\charakuru` (짧은 경로 — Windows 260자 제한 대책). 실행 `npm start` → http://127.0.0.1:8766 · 라이선스: 매출·투자 각 1억 엔 미만이면 무료(우리 해당) |
+| Claude Code 스킬 charakuru-claude-code (비공식, MIT) | `~/.claude/skills/charakuru-claude-code/` |
+| Blender VRM 애드온 4.10.5 | Blender 5.2 확장(user_default), `--factory-startup`에서도 켜짐 |
+| `BLENDER` 환경 변수 | `C:\Program Files\Blender Foundation\Blender 5.2\blender.exe` (사용자 변수) |
+| Codex CLI 0.172.0 | npm 전역 · ChatGPT 계정 로그인 확인 (Charakuru 그림 생성용) |
+| uv | winget 설치 |
+| godot-vrm 2.0.1 (+ MToon 셰이더) | 이 프로젝트 `addons/vrm`, `addons/Godot-MToon-Shader`, 플러그인 켬 · 샘플 VRM 읽기 확인(메시 2·뼈대 1) |
+| Blender MCP | **설치 못 함** — 자동 권한 검사가 막음. Charakuru는 Blender를 뒤에서 스크립트로 돌려 MCP 없이 됨. 필요하면 사용자가 직접 `uvx mcp-for-blender setup` |
+- 받은 원본: `C:\Users\leeji\ck\dl\` (키트 ZIP·기술 노트·VRM 애드온 ZIP·godot-vrm·blender-mcp 저장소).
+- 아직 안 한 것: Charakuru로 캐릭터 1명 만들기(Tripo 500~940크레딧) · 크롬 "다운로드 전 저장 위치 묻기"가 켜져 있으면 끄기(사용자).
