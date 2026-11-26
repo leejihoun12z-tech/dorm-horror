@@ -7,6 +7,7 @@ const MODEL := "res://assets/characters/mannequin_rigged/mannequin_rigged.glb"
 var dir: String = "res://.screenshots"
 var count: int = 1
 var raw: bool = false
+var tex_override: String = ""  # --tex=res://... 텍스처만 바꿔 봄
 var cam: Camera3D
 
 func _init() -> void:
@@ -15,6 +16,8 @@ func _init() -> void:
 			dir = a.substr(6)
 		elif a.begins_with("--count="):
 			count = int(a.substr(8))
+		elif a.begins_with("--tex="):
+			tex_override = a.substr(6)
 		elif a.begins_with("--raw="):
 			raw = a.substr(6) == "1"
 	DirAccess.make_dir_recursive_absolute(dir)
@@ -33,6 +36,9 @@ func _restyle(n: Node) -> void:
 		for s: int in range(mi.mesh.get_surface_count()):
 			var m: Material = mi.mesh.surface_get_material(s)
 			var tex: Texture2D = (m as BaseMaterial3D).albedo_texture if m is BaseMaterial3D else null
+			if tex_override != "":
+				tex = ImageTexture.create_from_image(Image.load_from_file(ProjectSettings.globalize_path(tex_override)))
+				(tex as ImageTexture).get_image().generate_mipmaps()
 			var sm := ShaderMaterial.new()
 			sm.shader = load("res://tools/dev/char_toon_flat_test.gdshader")
 			sm.set_shader_parameter("base_color", Color.WHITE)
