@@ -208,6 +208,19 @@ _답은 번호마다 "추천대로 / 다르게 / 나중에"면 된다._
 **만드는 길 [후보]**
 일러스트(아트 채팅 ComfyUI) → 레이어 나누기(사람 손질 + 레이어 분리 도구, 스카우트: See-through·Still2Rig) → 가려진 부분 채워 그리기 → Godot: 2D 뼈대(Skeleton2D·Polygon2D)를 화면 밖에서 그려 3D 공간의 판에 붙임 → 빛 받는 셰이더.
 
+**참고 자료 (2026-11-27 조사)**
+| 게임·자료 | 볼 점 |
+|---|---|
+| Cult of the Lamb (Massive Monster, Unity) | 2D 부위 그림을 Spine 뼈대로 움직여 3D 세계에 세움. 메시 변형으로 납작한 그림이 늘어나고 살짝 도는 것처럼 보임. 3D 조명·그림자를 2D 캐릭터에 받음. 부서마다 거의 1명인 작은 팀이 이 방식으로 완성 |
+| Wizard with a Gun (Unity, 개발 글) | 캐릭터는 Spine 2D 판, 배경은 3D. 판이 벽에 파고드는 문제 → "똑바로 선 것처럼" 깊이 계산을 바꾸는 셰이더 요령 |
+| Danganronpa | 3D 학교를 1인칭으로 둘러보고, 인물은 종이 인형 같은 2D 판 — 우리와 가장 가까운 시점 |
+| Paper Mario | 2D 인물 + 3D 배경. 돌 때 종이처럼 얇아지는 것을 재미로 씀 → 우리는 공포로 |
+| Castlebound (2026) | 납작한 PNG만으로 3D 장면 구성, 낮·밤은 조명 설정만 바꿈 |
+| Godot: SubViewport + Sprite3D | 2D 뼈대 캐릭터를 화면 밖에서 그려 3D 판(빌보드)에 붙이는 방법. Godot 4.7.2 포럼에서도 같은 질문·답 |
+- 출처: teemo.dev(Cult of the Lamb 아트 방향) · foro3d.com(Cult of the Lamb 기술) · straypixels.net(Wizard with a Gun) · TV Tropes 2½D · creativebloq.com(Castlebound) · forum.godotengine.org · vertuchoux.itch.io(Godot 2.5D 전환 글)
+
+**첫 시안 (2026-11-27, 한 장짜리 입간판):** `img/billboard_mock_20261127/billboard_mock.jpg` — 데포르메 전신 그림(배경 지움) 한 장을 시험 복도에 세움. 낮 정면 · 비스듬히(카메라를 향함) · 비스듬히(향하지 않음 = 종이) · 밤 손전등. 그림이 빛을 받음(밤 손전등 OK). 레이어 나누기·움직임 전. 도구 `tools/dev/billboard_mock.gd`.
+
 **시험(추천):** 마네킹 1명 — 정면 일러스트를 6~8레이어로 나눠 시험 복도에 세움 → 낮·밤 손전등 정지 화면 + 걷기·고개 기울기 10초 + 옆에서 본 모습. 3D 마네킹과 나란히 비교.
 
 ## 6. 결정 기록 (새 결정은 맨 위에 추가)
