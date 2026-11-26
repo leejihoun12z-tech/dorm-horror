@@ -12,10 +12,11 @@ _마지막 갱신: 2026-11-26_
 
 ## 다음 할 일
 1. **회색 상자 판** (tech-plan §4): 하루 흐름(아침 사감실 업무 → 낮 수리·민원 → 점호 → 심야 순찰 → 일지·회귀)을 그림 없이 돌아가게
-2. 3D 캐릭터 1명 시험(마네킹) → **모델링 방식 다시(사용자 11-26)**: R27_2 → 데포르메 5.5등신 전신 그림(ChatGPT, 정면+뒷모습) → Tripo 3D → Godot (`char3d-test-01-mannequin.md` §7, 사용자 시작 확인·Tripo 로그인 대기). Blender 스크립트 부품(§6)은 [폐기·대체] · 예전 메모 = 얼굴 표정 그림(아트 채팅 ComfyUI) · 가발·베레모·트렌치 로우폴리(PC Blender) — `docs/plan/char3d-test-01-mannequin.md` §4. 원래 계획: "Family Time 느낌" 방법(tech-plan §5-4)으로 기숙생 1명: 로우폴리 몸(Blender 또는 Tripo 로우폴리) + 그린 얼굴 텍스처 → 시험 복도에 세움 → 낮·밤 손전등 정지 화면 · 표정 3개 · 걷기 10초. PC 필요(`docs/pc-setup.md`)
+2. 3D 캐릭터 1명 시험(마네킹) → **모델링 방식 다시(사용자 11-26)**: R27_2 → 데포르메 5.5등신 전신 그림(ChatGPT, 정면+뒷모습) → 3D 모양(TripoSG 로컬 + Tripo 웹 비교) → 단색 다시 칠하기·관절별 자르기 → Godot (`char3d-test-01-mannequin.md` §7-1, 조사 `char3d-method-research-20261126.md`). 사용자 시작 확인·설치 승인 대기. Blender 스크립트 부품(§6)은 [폐기·대체] · 예전 메모 = 얼굴 표정 그림(아트 채팅 ComfyUI) · 가발·베레모·트렌치 로우폴리(PC Blender) — `docs/plan/char3d-test-01-mannequin.md` §4. 원래 계획: "Family Time 느낌" 방법(tech-plan §5-4)으로 기숙생 1명: 로우폴리 몸(Blender 또는 Tripo 로우폴리) + 그린 얼굴 텍스처 → 시험 복도에 세움 → 낮·밤 손전등 정지 화면 · 표정 3개 · 걷기 10초. PC 필요(`docs/pc-setup.md`)
 3. 사용자 결정 대기: 건물 이름 · 메인 기숙생 고르기 · 게임 길이 · 가제 · 밤 방식(어두운 빛 / 거친 저해상도) · 정확한 등신(작업값 5.5)
 
 ## 최근 완료
+- 2026-11-26: 3D 캐릭터 만드는 법 최신 자료 조사·검증(허깅페이스·깃허브·레딧·Godot) — AI 3D는 바탕 모양까지, 얼굴은 따로 그려 바꾸기 맞음, 마네킹은 자동 리깅 불필요, 로컬 TripoSG(MIT·8GB) 추가, Hunyuan3D·비상업 도구 제외. `docs/plan/char3d-method-research-20261126.md`
 - 2026-11-26: **마네킹 실제 부품 1차** — Blender 스크립트(`tools/char/build_mannequin_parts.py`)로 가발·베레모·셔츠·리본·치마·트렌치 로우폴리(면 약 1,000, 색 = 면마다 칠한 정점 색) → glb → `mannequin.gd`가 관절에 붙임. PC Godot 4.7.2 정지 화면 확인·오류 0, 어깨 폭·베레모 띠 다듬음. 전후 `docs/plan/img/mannequin_parts_20261126/`. **사람이 보기 전**
 - 2026-11-26: 마네킹 시험 PC 준비 확인 — PC Godot 4.7.2로 `char_shots.gd` 9장 · Blender 5.2.3 명령줄·glb 내보내기 확인 · 새로 설치할 것 없음. 실제 부품 만드는 길 A(Blender 스크립트, 추천)/B(Tripo) 사용자 고르기 대기 (`char3d-test-01-mannequin.md` §5)
 - 2026-11-25: **3D 캐릭터 시험 1 = 마네킹(R27 기준, 사용자)** 블록아웃 — Godot 안에서 부품 조립 로우폴리 + 그린 얼굴 0~3단계 + 빛 받는 툰 + 안 볼 때 자세 바뀜 + 시험 복도 낮/밤. 정지 화면 확인(`docs/plan/img/mannequin_test_20261125/`), 결함 4개 고침. 사람 플레이 전. `docs/plan/char3d-test-01-mannequin.md`
