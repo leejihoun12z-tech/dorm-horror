@@ -7,6 +7,8 @@ var MODEL: String = "res://assets/characters/mannequin_rigged/mannequin_rigged.g
 var dir: String = "res://.screenshots"
 var count: int = 1
 var raw: bool = false
+var model_scale: float = 1.55  # --scale= (VRM처럼 이미 실제 키인 모델은 1)
+var face_y: float = 0.73  # --face= 얼굴 높이(키 1 기준). 5.5등신 모델은 0.86
 var tex_override: String = ""  # --tex=res://... 텍스처만 바꿔 봄
 var cam: Camera3D
 
@@ -20,6 +22,10 @@ func _init() -> void:
 			tex_override = a.substr(6)
 		elif a.begins_with("--model="):
 			MODEL = a.substr(8)
+		elif a.begins_with("--scale="):
+			model_scale = float(a.substr(8))
+		elif a.begins_with("--face="):
+			face_y = float(a.substr(7))
 		elif a.begins_with("--raw="):
 			raw = a.substr(6) == "1"
 	DirAccess.make_dir_recursive_absolute(dir)
@@ -78,7 +84,7 @@ func _run() -> void:
 		var inst: Node3D = (load(MODEL) as PackedScene).instantiate()
 		scene.add_child(inst)
 		inst.global_position = mp + Vector3(((i % 2) * 2 - 1) * 0.45 * float(mini(i, 1)), 0.0, -float((i + 1) / 2) * 0.9)
-		inst.scale = Vector3.ONE * 1.55
+		inst.scale = Vector3.ONE * model_scale
 		if not raw:
 			_restyle(inst)
 		var ap: AnimationPlayer = _find_anim(inst)
@@ -112,6 +118,9 @@ func _run() -> void:
 		await _shot("crowd_%d" % count)
 		quit()
 		return
+	# 흔들림 뼈가 자리 잡을 때까지 기다림 (옮겨 놓은 직후에는 코트·머리카락이 뒤로 끌려가 있음)
+	for i: int in range(90):
+		await process_frame
 	# 실제 거리
 	for dist: float in [1.2, 2.5]:
 		cam.projection = Camera3D.PROJECTION_PERSPECTIVE
@@ -132,7 +141,7 @@ func _run() -> void:
 		ap.play("RESET") if ap.has_animation("RESET") else ap.seek(0.0, true)
 		ap.pause()
 	cam.projection = Camera3D.PROJECTION_ORTHOGONAL
-	var shots: Array = [["c_face", Vector3(0, 0.73, 0.05), 0.0, 0.31], ["c_chest", Vector3(0, 0.62, 0.08), 25.0, 0.28], ["c_knee", Vector3(0, 0.30, 0.06), 20.0, 0.30], ["c_hairback", Vector3(0, 0.70, 0), 180.0, 0.46], ["c_sleeve", Vector3(0.14, 0.50, 0.05), 30.0, 0.26]]
+	var shots: Array = [["c_face", Vector3(0, face_y, 0.05), 0.0, 0.31 * (0.6 if face_y > 0.8 else 1.0)], ["c_chest", Vector3(0, 0.62, 0.08), 25.0, 0.28], ["c_knee", Vector3(0, 0.30, 0.06), 20.0, 0.30], ["c_hairback", Vector3(0, face_y - 0.03, 0), 180.0, 0.46 * (0.6 if face_y > 0.8 else 1.0)], ["c_sleeve", Vector3(0.14, 0.50, 0.05), 30.0, 0.26]]
 	for s: Array in shots:
 		var p: Vector3 = s[1]
 		var target: Vector3 = mp + Vector3(p.x, p.y, p.z) * 1.55
