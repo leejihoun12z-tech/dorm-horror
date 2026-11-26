@@ -388,3 +388,10 @@ _방법: "Family Time 느낌" (tech-plan §5-4) — 로우폴리 + 그린 얼굴
 - 다시 생성: 스마트 메시 P2.0, 폴리곤 12,000 → **20,000**(모양 다듬기), 4개, 마지막 체험(0크레딧). 후보 4개 모두 **리본 하나**(`smart2_beret_bows.png`, `smart2_candidates.jpg`, `smart2_closeups.jpg`). 얼굴이 가장 깔끔한 **후보 3**(2.1만 면) → 텍스처 20크레딧 → `assets/art_src/char3d/mannequin_smart2_20261126/c2_3_tex.glb`(4.4MB).
 - 비교 `smart2_vs_smart1_views.jpg`, 베레모 `smart2_beret_tex.jpg`, 확대 `smart2_tex_closeups.jpg`.
 - 남은 것: 셔츠 배 쪽에 작은 점 하나(텍스처) · 손가락 선이 조금 번짐 · 리깅·게임 안 확인 전 · 사람 확인 전 [작업값]. 이제 체험이 없어 스마트 메시 다시 생성은 100크레딧.
+
+### 7-31. 새 모델 리깅·걷기·게임 확인 (2026-11-26, 사용자 "리깅 진행")
+- Tripo 자동 리깅(인간형·Mixamo, 20크레딧): "휴머노이드 리깅에 안 맞을 수 있음(T자세 권장)" 경고가 떴지만 "그래도 시도" → 정상 완료. 걷기 프리셋(무료) → GLB 4K(뼈대 + 걷기 1개) → `assets/characters/mannequin_smart/mannequin_smart.glb`(5.0MB). 남은 크레딧 2,650.
+- 게임 복도 촬영(`tools/dev/rigged_shots.gd`에 `--model=` 추가): 걷기 정상, 옷·머리 뚫림 없음 · 20명 동시 60fps(주사율 상한) · 비교 `img/mannequin_tripo_20261126/smart2_rig_walk.jpg`, 확대 `smart2_rig_close.jpg`.
+- 지금 게임판(HD 생성)보다: 리본 1개 · 얼굴·가슴 리본 선명 · 면 1/3. 아쉬운 것: 목 아래 흰 깃이 조금 지저분 · 코트 안감 빨강이 덜 보임 · 셔츠 배 점.
+- `tools/dev/rigged_character_check.gd`는 새 모델로 바꿈. 테스트 복도 마네킹(`game/characters/mannequin/`)은 아직 예전 부품판 그대로 — 교체는 사람 확인 뒤.
+- 사람 플레이 전 [작업값].

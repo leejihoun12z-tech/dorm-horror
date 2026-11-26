@@ -1,9 +1,9 @@
 extends SceneTree
 ## Tripo가 색·뼈대·걷기까지 만든 모델을 그대로 복도에 세워 찍는다.
-## godot --path . -s res://tools/dev/rigged_shots.gd -- --dir=절대경로 [--count=10] [--raw=1]
+## godot --path . -s res://tools/dev/rigged_shots.gd -- --dir=절대경로 [--count=10] [--raw=1] [--model=res://...glb]
 ## --raw=1: 재질을 안 바꾸고 glb 그대로. 기본: 텍스처는 그대로, 빛만 평평한 툰 셰이더(외곽선 없음)
 
-const MODEL := "res://assets/characters/mannequin_rigged/mannequin_rigged.glb"
+var MODEL: String = "res://assets/characters/mannequin_rigged/mannequin_rigged.glb"
 var dir: String = "res://.screenshots"
 var count: int = 1
 var raw: bool = false
@@ -18,6 +18,8 @@ func _init() -> void:
 			count = int(a.substr(8))
 		elif a.begins_with("--tex="):
 			tex_override = a.substr(6)
+		elif a.begins_with("--model="):
+			MODEL = a.substr(8)
 		elif a.begins_with("--raw="):
 			raw = a.substr(6) == "1"
 	DirAccess.make_dir_recursive_absolute(dir)
