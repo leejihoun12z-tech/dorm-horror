@@ -19,10 +19,16 @@ uniform sampler2D face_tex : source_color, filter_linear_mipmap;
 uniform vec2 face_center = vec2(0.0, 0.0);
 uniform vec2 face_size = vec2(0.26, 0.26);
 
+// 얼굴 그림은 정면 평면 투영 → 옆을 보는 면(볼 옆)에서는 그림이 늘어나므로 흐리게 뺀다
+uniform float face_front_min = 0.35;
+uniform float face_front_full = 0.6;
+
 varying vec3 local_pos;
+varying vec3 local_nrm;
 
 void vertex() {
 	local_pos = VERTEX;
+	local_nrm = NORMAL;
 }
 
 void fragment() {
@@ -35,7 +41,8 @@ void fragment() {
 		vec2 uv = vec2((local_pos.x - face_center.x) / face_size.x + 0.5, 0.5 - (local_pos.y - face_center.y) / face_size.y);
 		if (uv.x > 0.0 && uv.x < 1.0 && uv.y > 0.0 && uv.y < 1.0) {
 			vec4 f = texture(face_tex, uv);
-			col = mix(col, f.rgb, f.a);
+			float front = smoothstep(face_front_min, face_front_full, normalize(local_nrm).z);
+			col = mix(col, f.rgb, f.a * front);
 		}
 	}
 	ALBEDO = col;

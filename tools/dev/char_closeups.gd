@@ -48,7 +48,7 @@ func _run() -> void:
 		var a: float = deg_to_rad(s[2])
 		cam.projection = Camera3D.PROJECTION_ORTHOGONAL
 		cam.size = s[3]
-		cam.global_position = target + Vector3(sin(a), 0.15, cos(a)) * 2.0
+		cam.global_position = target + Vector3(sin(a), 0.15, cos(a)) * 0.9
 		cam.look_at(target, Vector3.UP)
 		await _shot(s[0])
 	quit()

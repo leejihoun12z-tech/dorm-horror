@@ -148,6 +148,6 @@
    "res://assets/characters/mannequin/face_w2_s0.png"
   ]
  },
- "faces_total": 19152,
- "source": "mq_tripo_W2_retopo_tex.glb"
+ "faces_total": 30460,
+ "source": "mq_tripo_W2_merged.glb"
 }
