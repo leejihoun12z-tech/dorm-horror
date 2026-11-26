@@ -1,7 +1,7 @@
 """glb 모델을 앞·오른쪽·뒤·3/4 네 방향으로 렌더해 한 장으로 붙인다 (Blender, 확인용).
 
 실행: blender -b --python tools/char/render_glb_views.py -- <입력.glb> <출력.png> [--parts]
-  --parts: 부위(물체)마다 다른 색 (부위 나누기 확인용). --vcol: 정점 색. 둘 다 없으면 회색 단색.
+  --parts: 부위(물체)마다 다른 색 (부위 나누기 확인용). --vcol: 정점 색. --tex: 텍스처. 없으면 회색 단색.
 부위 목록(이름·면 수·크기)을 콘솔에 찍는다.
 """
 import math
@@ -14,6 +14,7 @@ argv = sys.argv[sys.argv.index("--") + 1:]
 SRC, OUT = argv[0], argv[1]
 PARTS = "--parts" in argv
 VCOL = "--vcol" in argv
+TEXC = "--tex" in argv
 SIZE = 720
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -40,7 +41,7 @@ height = hi.z - lo.z
 scene = bpy.context.scene
 scene.render.engine = "BLENDER_WORKBENCH"
 scene.display.shading.light = "STUDIO"
-scene.display.shading.color_type = "RANDOM" if PARTS else ("VERTEX" if VCOL else "SINGLE")
+scene.display.shading.color_type = "RANDOM" if PARTS else ("VERTEX" if VCOL else ("TEXTURE" if TEXC else "SINGLE"))
 scene.display.shading.single_color = (0.8, 0.8, 0.8)
 scene.display.shading.show_cavity = True
 scene.render.resolution_x = SIZE

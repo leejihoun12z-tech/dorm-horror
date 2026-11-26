@@ -299,7 +299,6 @@ func _build_tripo() -> void:
 		_face_textures = [w2, w2, FACE_TEXTURES[2], FACE_TEXTURES[3]]
 	var finish_mats: Dictionary = {}
 	var inst: Node = (load(TRIPO_SCENE) as PackedScene).instantiate()
-	var atlas: Texture2D = null
 	var head_top: float = 0.0
 	for node: Node in inst.find_children("*", "MeshInstance3D", true, false):
 		var src: MeshInstance3D = node
@@ -312,21 +311,21 @@ func _build_tripo() -> void:
 		part.name = src.name
 		part.mesh = src.mesh
 		for s: int in range(src.mesh.get_surface_count()):
+			# 색 = glb에 든 텍스처 (Tripo가 칠한 것). 텍스처마다 무광 툰 재질 하나
 			var m: Material = src.mesh.surface_get_material(s)
-			if atlas == null and m is BaseMaterial3D:
-				atlas = (m as BaseMaterial3D).albedo_texture
-				_face_mat.set_shader_parameter("use_tex", true)
-				_face_mat.set_shader_parameter("albedo_tex", atlas)
+			var tex: Texture2D = (m as BaseMaterial3D).albedo_texture if m is BaseMaterial3D else null
 			if part_name == "face":
+				_face_mat.set_shader_parameter("use_tex", tex != null)
+				_face_mat.set_shader_parameter("albedo_tex", tex)
 				part.set_surface_override_material(s, _face_mat)
 				continue
-			var kind: String = m.resource_name if m != null and PART_FINISH.has(m.resource_name) else "cloth"
-			if not finish_mats.has(kind):
+			var key_tex: String = str(tex.get_instance_id()) if tex != null else "none"
+			if not finish_mats.has(key_tex):
 				var mat := _mat(Color.WHITE, 1.0, 0.0)
-				mat.set_shader_parameter("use_tex", true)
-				mat.set_shader_parameter("albedo_tex", atlas)
-				finish_mats[kind] = mat
-			part.set_surface_override_material(s, finish_mats[kind])
+				mat.set_shader_parameter("use_tex", tex != null)
+				mat.set_shader_parameter("albedo_tex", tex)
+				finish_mats[key_tex] = mat
+			part.set_surface_override_material(s, finish_mats[key_tex])
 		(joints[key] as Node3D).add_child(part)
 		if key == "head":
 			head_top = maxf(head_top, src.mesh.get_aabb().end.y)

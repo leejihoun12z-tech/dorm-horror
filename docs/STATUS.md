@@ -16,6 +16,7 @@ _마지막 갱신: 2026-11-26_
 3. 사용자 결정 대기: 건물 이름 · 메인 기숙생 고르기 · 게임 길이 · 가제 · 밤 방식(어두운 빛 / 거친 저해상도) · 정확한 등신(작업값 5.5)
 
 ## 최근 완료
+- 2026-11-26: **마네킹 몸 채색 = Tripo에 맡김** — Tripo 리토폴로지(1만 쿼드) + Tripo 텍스처 → 관절별 자르기만(`tools/char/split_tripo_textured.py`) → Godot에서 디자인대로 칠해짐(정지 화면) · 얼굴은 미룸 · `docs/plan/img/mannequin_tripo_20261126/ingame_tripo_texture.jpg`
 - 2026-11-26: 마네킹 색칠·얼굴 고침 — 무광 · 얼굴 = W2 원본에서 오림 · 색 = 텍스처 한 장에 픽셀 단위로 굽기 · 남은 문제 = 앞머리가 왼쪽 눈을 덮음(GPT가 앞머리를 바꿈) · `docs/plan/img/mannequin_tripo_20261126/ingame_fix1.jpg`
 - 2026-11-26: **마네킹 Tripo 모델 게임에 넣음** — Blender 한 번에(면 1.6만·디자인 색 7개로 칠하기·관절별 자르기) → `mannequin.gd`가 json 관절로 조립 · 낮·밤·얼굴 0~3단계·안 볼 때 자세 바뀜 확인(정지 화면) · 전후 `docs/plan/img/mannequin_tripo_20261126/ingame_before_after.jpg` · 얼굴 그림은 임시. 사람 플레이 전
 - 2026-11-26: 마네킹 W2 **얼굴 지운 판으로 Tripo 다시** — GPT 편집으로 정면·옆 눈·입 지움 → 멀티 뷰 + 부분별 생성 → 얼굴 매끈(눈 파임 없음) · 전후 `docs/plan/img/mannequin_tripo_20261126/W2_face_before_after.jpg` · 다음 = 면 줄이기·자르기·색·얼굴 그림 → Godot
