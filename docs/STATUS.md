@@ -16,6 +16,7 @@ _마지막 갱신: 2026-11-26_
 3. 사용자 결정 대기: 건물 이름 · 메인 기숙생 고르기 · 게임 길이 · 가제 · 밤 방식(어두운 빛 / 거친 저해상도) · 정확한 등신(작업값 5.5)
 
 ## 최근 완료
+- 2026-11-26: 마네킹 데포르메 전신 그림 7장(ChatGPT: 원본체 7·7·4.5 / 단순 평면 4·2.5 / 3D 설정화 4 / 툰 3D 렌더 4 — 실제 비율 눈대중) · 비교 `docs/plan/img/mannequin_deform_20261126/compare.jpg` · 5~6등신 칸이 빔. 사용자 고르기 대기
 - 2026-11-26: 3D 캐릭터 만드는 법 최신 자료 조사·검증(허깅페이스·깃허브·레딧·Godot) — AI 3D는 바탕 모양까지, 얼굴은 따로 그려 바꾸기 맞음, 마네킹은 자동 리깅 불필요, 로컬 TripoSG(MIT·8GB) 추가, Hunyuan3D·비상업 도구 제외. `docs/plan/char3d-method-research-20261126.md`
 - 2026-11-26: **마네킹 실제 부품 1차** — Blender 스크립트(`tools/char/build_mannequin_parts.py`)로 가발·베레모·셔츠·리본·치마·트렌치 로우폴리(면 약 1,000, 색 = 면마다 칠한 정점 색) → glb → `mannequin.gd`가 관절에 붙임. PC Godot 4.7.2 정지 화면 확인·오류 0, 어깨 폭·베레모 띠 다듬음. 전후 `docs/plan/img/mannequin_parts_20261126/`. **사람이 보기 전**
 - 2026-11-26: 마네킹 시험 PC 준비 확인 — PC Godot 4.7.2로 `char_shots.gd` 9장 · Blender 5.2.3 명령줄·glb 내보내기 확인 · 새로 설치할 것 없음. 실제 부품 만드는 길 A(Blender 스크립트, 추천)/B(Tripo) 사용자 고르기 대기 (`char3d-test-01-mannequin.md` §5)
