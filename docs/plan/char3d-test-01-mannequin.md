@@ -351,3 +351,4 @@ _방법: "Family Time 느낌" (tech-plan §5-4) — 로우폴리 + 그린 얼굴
 - HairDeck (Apache-2.0): 그림 1장 → 애니 머리카락 카드 + 흔들림 뼈 → GLB/VRM, 8GB 그래픽카드 확인. 머리카락만이라 몸에 옮겨 붙여야 함.
 - Claude만으로: saka2jp(bpy 스크립트 1개 → VRM 1.0·MToon·흔들림·표정 12개, 사용권 없음 → 보고 배우기만) · Zenn yy7613(Opus 5.5 + MPFB2 얼굴 토폴로지).
 - ✕ Neural4D AnimeArt(약관상 상업 불가).
+- (같은 날) 스카우트 최종 정리본 = `Projects/Scout/notes/handoff/기숙사-2026-11-26-정리.md`(앞 handoff·덧붙임 1·2를 대신함). 추가된 점: Charakuru 1체 500~940크레딧 · Tripo 유료 결과는 학습에 안 씀·지역 제한 없음. 스카우트 추천 비교 = 같은 그림 1장으로 Charakuru 1체 vs Claude만 1체 → 머리카락만 HairDeck로 바꿔 끼움 → godot-vrm으로 Godot에서 나란히.
