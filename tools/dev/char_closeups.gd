@@ -4,11 +4,14 @@ extends SceneTree
 
 var dir: String = "res://.screenshots"
 var cam: Camera3D
+var view: int = 0  # --view=1 색만(조명 없음) · 2 회색 모양 + 조명
 
 func _init() -> void:
 	for a: String in OS.get_cmdline_user_args():
 		if a.begins_with("--dir="):
 			dir = a.substr(6)
+		elif a.begins_with("--view="):
+			view = int(a.substr(7))
 	DirAccess.make_dir_recursive_absolute(dir)
 	_run()
 
@@ -30,6 +33,8 @@ func _run() -> void:
 	var m: Mannequin = scene.get("mannequin")
 	m.watcher = cam
 	m.set_stage(0)
+	if view != 0:
+		_set_view(m, view)
 	var mp: Vector3 = m.global_position
 	# 키 1.55 기준 높이(키 1.0 값 × 1.55). 앞 = +Z
 	var shots: Array = [
@@ -52,3 +57,15 @@ func _run() -> void:
 		cam.look_at(target, Vector3.UP)
 		await _shot(s[0])
 	quit()
+
+func _set_view(n: Node, v: int) -> void:
+	if n is MeshInstance3D:
+		var mi: MeshInstance3D = n
+		for i: int in range(mi.get_surface_override_material_count()):
+			var mat: Material = mi.get_surface_override_material(i)
+			if mat is ShaderMaterial:
+				(mat as ShaderMaterial).set_shader_parameter("debug_view", v)
+		if mi.material_override is ShaderMaterial:
+			(mi.material_override as ShaderMaterial).set_shader_parameter("debug_view", v)
+	for c: Node in n.get_children():
+		_set_view(c, v)

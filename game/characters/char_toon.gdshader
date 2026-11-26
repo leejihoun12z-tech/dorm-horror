@@ -21,6 +21,8 @@ uniform vec2 face_size = vec2(0.26, 0.26);
 
 // 얼굴 그림은 정면 평면 투영 → 옆을 보는 면(볼 옆)에서는 그림이 늘어나므로 흐리게 뺀다
 uniform float face_front_min = 0.35;
+// 확인용: 0 = 보통 · 1 = 조명 없이 색만 · 2 = 색 없이 회색(모양·빛만)
+uniform int debug_view = 0;
 uniform float face_front_full = 0.6;
 
 varying vec3 local_pos;
@@ -44,6 +46,12 @@ void fragment() {
 			float front = smoothstep(face_front_min, face_front_full, normalize(local_nrm).z);
 			col = mix(col, f.rgb, f.a * front);
 		}
+	}
+	if (debug_view == 1) {
+		EMISSION = col;
+		col = vec3(0.0);
+	} else if (debug_view == 2) {
+		col = vec3(0.78);
 	}
 	ALBEDO = col;
 	ROUGHNESS = roughness_value;

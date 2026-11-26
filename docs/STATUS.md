@@ -16,6 +16,7 @@ _마지막 갱신: 2026-11-26_
 3. 사용자 결정 대기: 건물 이름 · 메인 기숙생 고르기 · 게임 길이 · 가제 · 밤 방식(어두운 빛 / 거친 저해상도) · 정확한 등신(작업값 5.5)
 
 ## 최근 완료
+- 2026-11-26: **마네킹 작업 방식 다시 검토** — 세 층으로 나눠 보니 텍스처(AI 붓질)와 모양(울퉁불퉁한 AI 모델의 지그재그 빛) 둘 다 목표와 결이 다름 · 팔레트 묶기·한 색·법선 매끈 시험 = 천장 낮음 · 방식 A~D 사용자 결정 대기 (`char3d-test-01-mannequin.md` §7-13)
 - 2026-11-26: **마네킹 연결부위·얼굴 위치 고침** — 원인 = Tripo 그림과 3D 모양이 안 맞음(겹침 0.30~0.76)·텍스처 조각 밖 검정·얼굴 그림 위치 → **3D 렌더 위에 GPT가 색만 칠한 그림**으로 Tripo 다시(겹침 0.78~0.91) · 조각 밖 채우기 · 얼굴 확대 렌더에 칠한 눈·입을 3D 얼굴 자리에 맞춰 오림 · 전후 `docs/plan/img/mannequin_tripo_20261126/paintover_before_after.jpg` · 정지 화면만
 - 2026-11-26: **마네킹 파츠별로 따로 칠해 붙임** — 겉(코트·베레모 등) = 1차 Tripo 텍스처 · 속(셔츠·다리·손) + 얼굴 있는 모델 머리 = GPT로 코트 벗긴 그림 → Tripo 다시 칠함 → 합쳐서 관절별 자르기(`build_inner_pass.py`·`merge_inner_pass.py`) · 번짐 없어짐·두 눈 보임·머리 브릿지 · 전후 `docs/plan/img/mannequin_tripo_20261126/inner_pass_before_after.jpg` · 정지 화면만, 사람이 보기 전
 - 2026-11-26: **마네킹 몸 채색 = Tripo에 맡김** — Tripo 리토폴로지(1만 쿼드) + Tripo 텍스처 → 관절별 자르기만(`tools/char/split_tripo_textured.py`) → Godot에서 디자인대로 칠해짐(정지 화면) · 얼굴은 미룸 · `docs/plan/img/mannequin_tripo_20261126/ingame_tripo_texture.jpg`
