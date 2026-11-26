@@ -46,6 +46,12 @@ JOINTS = {
 }
 FACE_CENTER = (0.0, 0.745)
 FACE_SIZE = 0.15
+# face_from_paint.py가 칠한 정면 그림에서 얼굴 네모를 재면 그 값을 씀
+FACE_FIT = os.path.join(ROOT, "assets/characters/mannequin/face_fit.json")
+if os.path.exists(FACE_FIT):
+	_ff = json.load(open(FACE_FIT, encoding="utf-8"))
+	FACE_CENTER = tuple(_ff["center"])
+	FACE_SIZE = _ff["size"]
 # 부분별 생성 모델의 부위 중심(키 1.0 기준, 확인함) → 이름. 다시 만든 모델에서는 가장 가까운 중심으로 이름을 정함
 PART_CENTERS = {
 	"hair": (-0.002, -0.009, 0.763), "beret": (-0.004, 0.022, 0.881), "face": (0.0, -0.070, 0.726),

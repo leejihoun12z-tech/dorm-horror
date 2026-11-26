@@ -140,14 +140,14 @@
  },
  "face": {
   "center": [
-   0.0,
-   0.14724999999999996
+   -0.007626,
+   0.11843549999999997
   ],
-  "size": 0.23249999999999998,
+  "size": 0.255998,
   "textures": [
    "res://assets/characters/mannequin/face_w2_s0.png"
   ]
  },
  "faces_total": 30460,
- "source": "mq_tripo_W2_merged.glb"
+ "source": "mq_tripo_W2_final.glb"
 }
