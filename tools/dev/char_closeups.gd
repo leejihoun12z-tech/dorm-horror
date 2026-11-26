@@ -6,6 +6,9 @@ var dir: String = "res://.screenshots"
 var cam: Camera3D
 var view: int = 0  # --view=1 색만(조명 없음) · 2 회색 모양 + 조명
 var outline: bool = true  # --outline=0 외곽선 껍데기 끔
+var hide: String = ""  # --hide=hair,beret 이름에 이 글자가 든 부품 숨김
+var no_face: bool = false  # --noface=1 얼굴 그림 끔
+var only_face: bool = false  # --onlyface=1 얼굴 쪽 장면만
 var flat_light: bool = false  # --flat=1 면 방향과 상관없이 빛 받는 시험 셰이더
 
 func _init() -> void:
@@ -16,6 +19,12 @@ func _init() -> void:
 			view = int(a.substr(7))
 		elif a.begins_with("--outline="):
 			outline = a.substr(10) != "0"
+		elif a.begins_with("--hide="):
+			hide = a.substr(7)
+		elif a.begins_with("--noface="):
+			no_face = a.substr(9) == "1"
+		elif a.begins_with("--onlyface="):
+			only_face = a.substr(11) == "1"
 		elif a.begins_with("--flat="):
 			flat_light = a.substr(7) == "1"
 	DirAccess.make_dir_recursive_absolute(dir)
@@ -59,6 +68,18 @@ func _run() -> void:
 		cam.global_position = mp + Vector3(0.0, 1.5, dist)
 		cam.look_at(mp + Vector3(0.0, 1.05, 0.0), Vector3.UP)
 		await _shot("d%02d_view" % int(dist * 10.0))
+	if only_face:
+		var hp: Vector3 = (m.joints["head"] as Node3D).global_position + Vector3(0, 0.12, 0)
+		cam.projection = Camera3D.PROJECTION_ORTHOGONAL
+		var views: Array = [["f_front", 0.0, 0.0], ["f_left30", -30.0, 0.0], ["f_right30", 30.0, 0.0], ["f_down20", 0.0, 0.36], ["f_up", 0.0, -0.25]]
+		for v: Array in views:
+			var ang: float = deg_to_rad(v[1])
+			cam.size = 0.36
+			cam.global_position = hp + Vector3(sin(ang), v[2], cos(ang)) * 1.0
+			cam.look_at(hp, Vector3.UP)
+			await _shot(v[0])
+		quit()
+		return
 	for s: Array in shots:
 		var p: Vector3 = s[1]
 		var target: Vector3 = mp + Vector3(p.x, p.y * 1.55, p.z * 1.55)
@@ -73,11 +94,16 @@ func _run() -> void:
 func _set_view(n: Node, v: int) -> void:
 	if n is MeshInstance3D:
 		var mi: MeshInstance3D = n
+		for h: String in hide.split(",", false):
+			if String(mi.name).contains(h):
+				mi.visible = false
 		for i: int in range(mi.get_surface_override_material_count()):
 			var mat: Material = mi.get_surface_override_material(i)
 			if mat is ShaderMaterial:
 				var sm: ShaderMaterial = mat
 				sm.set_shader_parameter("debug_view", v)
+				if no_face:
+					sm.set_shader_parameter("use_face", false)
 				if not outline:
 					sm.next_pass = null
 				if flat_light:

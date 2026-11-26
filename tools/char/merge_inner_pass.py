@@ -152,6 +152,9 @@ def main():
 	for o in outer:
 		if base(o.name) == "outer_face":
 			flatten_face(o)
+			hair = [x for x in inner if base(x.name) == "inner_hair"]
+			if hair:
+				full_head(o, hair[0])
 	pad_all(inner + outer)
 	for o in bpy.data.objects:
 		o.select_set(o.type == "MESH")
@@ -182,6 +185,84 @@ def flatten_face(o):
 		new.pack()
 		node.image = new
 		print("face flat color", np.round(skin * 255).astype(int))
+
+
+def full_head(face, hair):
+	"""얼굴판(앞머리 밑으로 보이던 조각뿐)을 온전한 머리통으로 바꾼다.
+	공 모양에서 시작해 중심에서 바깥으로 광선을 쏴서: 얼굴판에 맞으면 그 자리(코·턱 모양 유지),
+	아니면 머리카락 안쪽 93% 지점(머리카락 밖으로 안 나옴), 아무것도 없으면 타원 그대로.
+	→ 얼굴판과 머리카락 사이 구멍이 없어지고, 얼굴 그림이 얹힐 면이 이마·관자놀이까지 이어짐."""
+	fv = np.array([tuple(v.co) for v in face.data.vertices])
+	hv = np.array([tuple(v.co) for v in hair.data.vertices])
+	chin = fv[:, 2].min(); top = hv[:, 2].max()
+	c = Vector((0.0, float((hv[:, 1].min() + hv[:, 1].max()) / 2), float(chin + (top - chin) * 0.5)))
+	rx = float((hv[:, 0].max() - hv[:, 0].min()) / 2 * 0.86)
+	ry = float((hv[:, 1].max() - hv[:, 1].min()) / 2 * 0.86)
+	rz = float((top - chin) * 0.5)
+
+	def tree(o):
+		return BVHTree.FromPolygons([v.co.copy() for v in o.data.vertices], [list(p.vertices) for p in o.data.polygons])
+	ft, ht = tree(face), tree(hair)
+	bm = bmesh.new()
+	bmesh.ops.create_uvsphere(bm, u_segments=64, v_segments=40, radius=1.0)
+	hit_face = {}
+	for v in bm.verts:
+		d = v.co.normalized()
+		ell = 1.0 / math.sqrt((d.x / rx) ** 2 + (d.y / ry) ** 2 + (d.z / rz) ** 2)
+		r = ell
+		hf = ft.ray_cast(c, d)
+		if hf[0] is not None:
+			r = hf[3]; hit_face[v.index] = True
+		else:
+			hh = ht.ray_cast(c, d)
+			if hh[0] is not None:
+				r = min(ell, hh[3] * 0.93)
+		v.co = c + d * r
+	# 얼굴판에 안 맞은 점만 이웃 평균으로 몇 번 다듬음 (얼굴판 경계 턱 줄이기)
+	for _ in range(6):
+		new = {}
+		for v in bm.verts:
+			if v.index in hit_face:
+				continue
+			nb = [e.other_vert(v).co for e in v.link_edges]
+			new[v.index] = (v.co + sum(nb, Vector()) / len(nb)) / 2
+		bm.verts.ensure_lookup_table()
+		for i, co in new.items():
+			d = (co - c).normalized()
+			hh = ht.ray_cast(c, d)
+			r = (co - c).length
+			if hh[0] is not None:
+				r = min(r, hh[3] * 0.93)
+			bm.verts[i].co = c + d * r
+	# 목: 원래 얼굴판을 머리 중심 쪽으로 5% 줄여 머리통 안에 그대로 둠 → 목 부분만 밖으로 보임
+	# (찢어진 윗가장자리는 머리통 안에 숨고, 외곽선 껍데기 3.5mm도 안 튀어나옴)
+	old = bmesh.new(); old.from_mesh(face.data)
+	vmap = {}
+	for v in old.verts:
+		vmap[v.index] = bm.verts.new(c + (v.co - c) * 0.95)
+	old.normal_update()
+	oc = sum((v.co for v in old.verts), Vector()) / len(old.verts)
+	inward = sum(1 for f in old.faces if (f.calc_center_median() - oc).dot(f.normal) < 0) > len(old.faces) / 2
+	for f in old.faces:
+		try:
+			vs = [vmap[v.index] for v in f.verts]
+			bm.faces.new(vs[::-1] if inward else vs)
+		except ValueError:
+			pass
+	old.free()
+	bm.normal_update()
+	me = face.data
+	mats = list(me.materials)
+	bm.to_mesh(me); bm.free()
+	uvl = me.uv_layers.new(name="UVMap") if not me.uv_layers else me.uv_layers.active
+	for l in uvl.data:
+		l.uv = (0.5, 0.5)
+	for p in me.polygons:
+		p.use_smooth = True
+	if not me.materials:
+		for m in mats:
+			me.materials.append(m)
+	print("full head: verts", len(me.vertices), "from face plate hits", len(hit_face))
 
 
 def pad_all(objs):

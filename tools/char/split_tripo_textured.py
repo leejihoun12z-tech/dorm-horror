@@ -104,7 +104,11 @@ def main():
 			groups.setdefault(ref_part[idx] if idx is not None else "coat", []).append(f.index)
 		bm.free()
 		print(o.name, {k: len(v) for k, v in groups.items()})
-		if len(meshes) > 1:
+		# 물체 이름에 부위가 적혀 있으면(merge_inner_pass.py 결과 outer_x / inner_x) 그 이름을 그대로 씀
+		own = o.name.split(".")[0].replace("outer_", "").replace("inner_", "")
+		if own in PART_CENTERS:
+			groups = {own: [i for v in groups.values() for i in v]}
+		elif len(meshes) > 1:
 			# 부위가 이미 나뉜 모델: 물체 하나 = 부위 하나 (가장 많이 나온 이름)
 			main = max(groups, key=lambda k: len(groups[k]))
 			groups = {main: [i for v in groups.values() for i in v]}
