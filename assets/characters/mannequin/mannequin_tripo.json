@@ -141,9 +141,12 @@
  "face": {
   "center": [
    0.0,
-   0.09609973789687674
+   0.14724959839037577
   ],
-  "size": 0.17824951384098123
+  "size": 0.23249936587954073,
+  "textures": [
+   "res://assets/characters/mannequin/face_w2_s0.png"
+  ]
  },
  "faces_total": 16033
 }

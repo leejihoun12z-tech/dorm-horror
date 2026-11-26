@@ -6,8 +6,10 @@
 출력: assets/characters/mannequin/mannequin_tripo.glb  (물체 이름 "<관절>__<부품>", 원점 = 관절)
       assets/characters/mannequin/mannequin_tripo.json (관절 위치·얼굴 자리)
 
-순서: ① 부위 이름 붙이기 ② 면 줄이기 ③ 그림을 비춰 면마다 색 → 팔레트 색으로 맞춤(Family Time식 평면 색)
-      ④ 소매는 팔꿈치, 다리는 무릎에서 잘라 관절별 부품으로 + 관절 구슬 ⑤ 키 1.55m로 키워 내보내기
+순서: ① 부위 이름 붙이기 ② 면 줄이기·삼각형으로 ③ UV 펼치기 → 그림을 비춰 **텍스처 한 장에 픽셀 단위로 굽기**
+      → 부위별 허용 디자인 색으로 맞추고 얼룩 정리(Family Time식 평면 색, 경계는 그림 선을 따라감)
+      ④ 얼굴 그림: W2 원본(얼굴 있음)과 얼굴 지운 판의 차이 = 눈·눈썹·입 → 투명 배경 그림 (face_w2_s0.png)
+      ⑤ 소매는 팔꿈치, 다리는 무릎에서 잘라 관절별 부품으로 + 관절 구슬 ⑥ 키 1.55m로 키워 내보내기
 좌표: Blender(z 위, 캐릭터 정면 = -Y). glTF로 내보내면 Godot에서 y 위·정면 +Z.
 """
 import json
@@ -25,10 +27,14 @@ SRC = os.path.join(ROOT, "assets/art_src/char3d/mannequin_tripo_20261126/mq_trip
 IMG_DIR = os.path.join(ROOT, "assets/art_src/char3d/mannequin_deform_20261126/noface")
 OUT_GLB = os.path.join(ROOT, "assets/characters/mannequin/mannequin_tripo.glb")
 OUT_JSON = os.path.join(ROOT, "assets/characters/mannequin/mannequin_tripo.json")
+OUT_TEX = os.path.join(ROOT, "assets/characters/mannequin/mannequin_tripo_atlas.png")
+OUT_FACE = os.path.join(ROOT, "assets/characters/mannequin/face_w2_s0.png")
+TEX = 2048
+FACE_TEX = 512
+FILTER_PASSES = 2  # 5x5 다수결 횟수 (텍스처 얼룩 정리)
+MIN_TEX_ISLAND = 1500  # 이보다 작은 색 조각(텍셀 수)은 부위의 주된 색으로
+MIN_TEX_ISLAND_GOLD = 60
 HEIGHT = 1.55
-SMOOTH_PASSES = 5
-# 이보다 작은 색 섬(이어진 면 수)은 주변 색으로
-MIN_ISLAND = 30
 # 디자인 색 (sRGB). W2 그림에서 뽑아 손으로 고정
 PALETTE = {
 	"black": (34, 29, 31), "hair": (50, 43, 47), "red": (196, 30, 40), "white": (238, 234, 236),
@@ -83,9 +89,9 @@ CUTS = {  # 부품: (자를 관절, 위쪽 관절, 아래쪽 관절)
 	"l_sleeve": ("l_elbow", "l_shoulder", "l_elbow"), "r_sleeve": ("r_elbow", "r_shoulder", "r_elbow"),
 	"l_leg": ("l_knee", "l_hip", "l_knee"), "r_leg": ("r_knee", "r_hip", "r_knee"),
 }
-# 얼굴 그림 자리 (Blender 좌표, 정면에서 본 중심과 크기)
-FACE_CENTER = (0.0, 0.712)  # (x, z)
-FACE_SIZE = 0.115
+# 얼굴 그림 자리 (Blender 좌표, 정면에서 본 중심과 크기). 이 네모 안의 눈·눈썹·입을 오려 씀
+FACE_CENTER = (0.0, 0.745)  # (x, z)
+FACE_SIZE = 0.15
 
 
 def load_view(name):
@@ -130,7 +136,10 @@ def main():
 		mod.ratio = ratio
 		bpy.context.view_layer.objects.active = o
 		bpy.ops.object.modifier_apply(modifier="dec")
-		print(f"decimate {name}: {n} -> {len(o.data.polygons)}")
+		bm = bmesh.new(); bm.from_mesh(o.data)
+		bmesh.ops.triangulate(bm, faces=bm.faces[:])
+		bm.to_mesh(o.data); bm.free()
+		print(f"decimate {name}: {n} -> {len(o.data.polygons)} tris")
 
 	# ③ 색 비추기: 모든 부품을 합친 BVH로 가림 검사
 	verts_all, polys_all = [], []
@@ -154,63 +163,166 @@ def main():
 		v["fit"] = fit_view(v, pts, ufn, (umin + umax) / 2, lo.z, hi.z)
 		print(f"fit {key}: scale x{v['fit'][0]:.3f} dx {v['fit'][1]:+.1f} dy {v['fit'][2]:+.1f} IoU {v['fit'][3]:.3f}")
 
-	def sample(view, p):
+	def to_img(view, P):
+		"""모델 점들(N,3) → 그 방향 그림의 (x, y) 픽셀 (실수)."""
 		v, d, ufn, (umin, umax) = views[view]
 		k, dx, dy, _ = v["fit"]
 		scale = (v["y1"] - v["y0"]) / (hi.z - lo.z) * k
-		ucenter_img = (v["x0"] + v["x1"]) / 2 + dx
-		ucenter_mod = (umin + umax) / 2
-		x = int(round(ucenter_img + (ufn(p) - ucenter_mod) * scale))
-		y = int(round(v["y1"] + dy - (p.z - lo.z) * scale))
-		if 0 <= x < v["w"] and 0 <= y < v["h"]:
-			return v["px"][y, x]
-		return None
+		u = {"front": P[:, 0], "back": -P[:, 0], "right": -P[:, 1], "left": -P[:, 1]}[view]
+		x = (v["x0"] + v["x1"]) / 2 + dx + (u - (umin + umax) / 2) * scale
+		y = v["y1"] + dy - (P[:, 2] - lo.z) * scale
+		return x, y
 
-	face_cols = {}
+	def sample_many(view, P):
+		v = views[view][0]
+		x, y = to_img(view, P)
+		xi = np.clip(np.round(x).astype(int), 0, v["w"] - 1)
+		yi = np.clip(np.round(y).astype(int), 0, v["h"] - 1)
+		c = v["px"][yi, xi]
+		ok = c.min(axis=1) < 0.97  # 흰 배경은 버림
+		return c, ok
+
+	# 면마다 쓸 방향(가림 검사): 법선과 가장 맞는 방향부터, 가려지면 다음 방향
+	face_view = {}
 	for name, o in objs.items():
-		cols = []
+		fv = []
 		for poly in o.data.polygons:
 			c = o.matrix_world @ poly.center
 			n = (o.matrix_world.to_3x3() @ poly.normal).normalized()
-			order = sorted(views, key=lambda k: -n.dot(views[k][1]))
-			col = None
-			for k in order:
+			chosen = None
+			for k in sorted(views, key=lambda k: -n.dot(views[k][1])):
 				d = views[k][1]
 				if n.dot(d) < -0.05:
 					break
-				hit = bvh.ray_cast(c + n * 0.0015 + d * 0.0005, d)
-				if hit[0] is not None:
-					continue
-				s = sample(k, c)
-				if s is not None and s.min() < 0.97:  # 흰 배경은 버림
-					col = s
+				if bvh.ray_cast(c + n * 0.0015 + d * 0.0005, d)[0] is None:
+					chosen = k
 					break
-			cols.append(col)
-		known = [c for c in cols if c is not None]
-		fallback = np.median(np.array(known), axis=0) if known else np.array([0.5, 0.5, 0.5])
-		face_cols[name] = np.array([c if c is not None else fallback for c in cols])
-		print(f"color {name}: seen {len(known)}/{len(cols)}")
+			fv.append(chosen)
+		face_view[name] = fv
+		print(f"view {name}: seen {sum(1 for x in fv if x)}/{len(fv)}")
 
-	# 팔레트: 디자인 색(R27_2·W2) 고정 + 부위마다 쓸 수 있는 색만 → 가장 가까운 색 → 이웃 다수결로 외톨이 얼룩 지우기
+	# ③ UV: 모든 부품을 한 번에 펼쳐 한 장(아틀라스)에. 구석 한 칸은 관절 구슬 색 자리로 비움
+	bpy.ops.object.select_all(action="DESELECT")
+	for o in objs.values():
+		o.select_set(True)
+	bpy.context.view_layer.objects.active = next(iter(objs.values()))
+	bpy.ops.object.mode_set(mode="EDIT")
+	bpy.ops.mesh.select_all(action="SELECT")
+	bpy.ops.uv.smart_project(angle_limit=math.radians(60), island_margin=0.004)
+	bpy.ops.object.mode_set(mode="OBJECT")
+	for o in objs.values():
+		for l in o.data.uv_layers.active.data:
+			l.uv = (l.uv[0] * 0.97, l.uv[1] * 0.97)
+
+	# 굽기: 삼각형마다 텍스처 픽셀을 채우고, 그 점을 그 면의 방향 그림에서 읽음
 	names = list(PALETTE)
 	cent = np.array([PALETTE[k] for k in names], dtype=np.float32) / 255.0
-	for name, o in objs.items():
+	tex = np.zeros((TEX, TEX, 3), dtype=np.float32)
+	seen = np.zeros((TEX, TEX), dtype=bool)
+	part = np.full((TEX, TEX), -1, dtype=np.int16)
+	for pi, (name, o) in enumerate(objs.items()):
+		mw = o.matrix_world
+		vw = np.array([tuple(mw @ v.co) for v in o.data.vertices], dtype=np.float64)
+		uvd = o.data.uv_layers.active.data
+		loops = o.data.loops
+		for poly in o.data.polygons:
+			li = list(poly.loop_indices)
+			uv = np.array([tuple(uvd[i].uv) for i in li]) * TEX
+			P = vw[[loops[i].vertex_index for i in li]]
+			xs, ys = uv[:, 0], TEX - uv[:, 1]
+			x0, x1 = int(max(0, np.floor(xs.min()))), int(min(TEX - 1, np.ceil(xs.max())))
+			y0, y1 = int(max(0, np.floor(ys.min()))), int(min(TEX - 1, np.ceil(ys.max())))
+			if x1 < x0 or y1 < y0:
+				continue
+			gx, gy = np.meshgrid(np.arange(x0, x1 + 1) + 0.5, np.arange(y0, y1 + 1) + 0.5)
+			(ax, bx, cx), (ay, by, cy) = xs, ys
+			den = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy)
+			if abs(den) < 1e-12:
+				continue
+			w0 = ((by - cy) * (gx - cx) + (cx - bx) * (gy - cy)) / den
+			w1 = ((cy - ay) * (gx - cx) + (ax - cx) * (gy - cy)) / den
+			w2 = 1 - w0 - w1
+			e = -0.08  # 모서리 조금 넘겨 채움 (틈 방지)
+			m = (w0 >= e) & (w1 >= e) & (w2 >= e)
+			if not m.any():
+				continue
+			W = np.stack([w0[m], w1[m], w2[m]], axis=1)
+			pts = W @ P
+			yy, xx = (gy[m] - 0.5).astype(int), (gx[m] - 0.5).astype(int)
+			part[yy, xx] = pi
+			view = face_view[name][poly.index]
+			if view is None:
+				continue
+			c, ok = sample_many(view, pts)
+			tex[yy[ok], xx[ok]] = c[ok]
+			seen[yy[ok], xx[ok]] = True
+		print(f"bake {name}: texels {(part == pi).sum()} seen {(seen & (part == pi)).sum()}")
+
+	# 디자인 색으로 맞추기 (부위별 허용 색) → 5x5 다수결로 얼룩 정리
+	lab = np.full((TEX, TEX), -1, dtype=np.int16)
+	for pi, name in enumerate(objs):
 		allowed = [names.index(k) for k in ALLOWED[name]]
-		fc = face_cols[name]
-		sub = cent[allowed]
-		lab = np.array(allowed)[np.argmin(((fc[:, None, :] - sub[None]) ** 2).sum(2), axis=1)]
-		lab = smooth_labels(o.data, lab, SMOOTH_PASSES)
-		lab = remove_islands(o.data, lab, MIN_ISLAND, keep_small={names.index("gold"): 4})
-		mesh = o.data
-		attr = mesh.color_attributes.new("Col", "FLOAT_COLOR", "CORNER")
-		mesh.color_attributes.active_color = attr
-		lin = srgb_to_linear(cent)
-		for poly, k in zip(mesh.polygons, lab):
-			r, g, b = lin[k]
-			for li in poly.loop_indices:
-				attr.data[li].color = (r, g, b, 1.0)
-		counts = {names[k]: int((lab == k).sum()) for k in set(lab.tolist())}
-		print(f"paint {name}: {counts}")
+		pm = part == pi
+		ps = pm & seen
+		if ps.any():
+			sub = cent[allowed]
+			d = ((tex[ps][:, None, :] - sub[None]) ** 2).sum(2)
+			lab[ps] = np.array(allowed)[np.argmin(d, axis=1)]
+			vals, cnt = np.unique(lab[ps], return_counts=True)
+			fallback = vals[np.argmax(cnt)]
+		else:
+			fallback = allowed[0]
+		lab[pm & ~seen] = fallback
+		if name == "face":
+			lab[pm] = names.index("skin")
+		for _ in range(FILTER_PASSES):
+			counts = np.stack([box_sum((lab == k) & pm, 2) for k in allowed])
+			best = np.array(allowed)[np.argmax(counts, axis=0)]
+			lab[pm] = best[pm]
+		# 텍스처 안의 작은 색 조각 지우기: 부위의 주된 색이 아닌 조각이 작으면 주된 색으로 (금색은 작아도 남김)
+		vals, cnt = np.unique(lab[pm], return_counts=True)
+		main_col = vals[np.argmax(cnt)]
+		for k in allowed:
+			if k == main_col:
+				continue
+			mk = (lab == k) & pm
+			if not mk.any():
+				continue
+			big = keep_big_parts(mk, MIN_TEX_ISLAND_GOLD if names[k] == "gold" else MIN_TEX_ISLAND)
+			lab[mk & ~big] = main_col
+		vals, cnt = np.unique(lab[pm], return_counts=True)
+		print(f"paint {name}: " + ", ".join(f"{names[v]} {c}" for v, c in zip(vals, cnt)))
+	img_px = np.zeros((TEX, TEX, 3), dtype=np.float32)
+	filled = lab >= 0
+	img_px[filled] = cent[lab[filled]]
+	for _ in range(10):  # 섬 밖으로 번지게 (경계 틈 방지)
+		for dy_, dx_ in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+			src = np.roll(np.roll(img_px, dy_, 0), dx_, 1)
+			sf = np.roll(np.roll(filled, dy_, 0), dx_, 1)
+			put = ~filled & sf
+			img_px[put] = src[put]
+			filled = filled | put
+	sw = int(TEX * 0.025)
+	img_px[:sw, TEX - sw:] = cent[names.index("joint")]  # 관절 구슬 색 자리 (UV 0.988 근처)
+	img = bpy.data.images.new("mannequin_tripo_atlas", TEX, TEX)
+	# 8비트 이미지 버퍼는 sRGB 값 그대로 저장됨 (그림에서 읽은 값도 sRGB)
+	rgba = np.concatenate([img_px[::-1], np.ones((TEX, TEX, 1), np.float32)], axis=2)
+	img.pixels = rgba.ravel()
+	img.filepath_raw = OUT_TEX
+	img.file_format = "PNG"
+	img.save()
+	mats = {}
+	for kind in ("hair", "cloth", "skin"):
+		m = bpy.data.materials.new(kind)
+		m.use_nodes = True
+		bsdf = m.node_tree.nodes.get("Principled BSDF")
+		node = m.node_tree.nodes.new("ShaderNodeTexImage")
+		node.image = img
+		m.node_tree.links.new(node.outputs["Color"], bsdf.inputs["Base Color"])
+		mats[kind] = m
+
+	# ④ 얼굴 그림: 원본(얼굴 있음) - 얼굴 지운 판 = 눈·눈썹·입. 얼굴 지운 판에서 피부인 자리만 (3D 앞머리 밑으로 보이는 곳)
+	make_face_texture(views, to_img)
 
 	# ④ 자르기 + 관절 구슬
 	pieces = {}  # 이름 → (관절, 물체)
@@ -241,95 +353,25 @@ def main():
 		mesh.name = o.name
 		for poly in mesh.polygons:
 			poly.use_smooth = True
-		mat = bpy.data.materials.get("hair" if pname in ("hair",) else ("skin" if pname == "face" else "cloth")) or bpy.data.materials.new("hair" if pname == "hair" else ("skin" if pname == "face" else "cloth"))
 		mesh.materials.clear()
-		mesh.materials.append(mat)
+		mesh.materials.append(mats["hair" if pname == "hair" else ("skin" if pname == "face" else "cloth")])
 
 	os.makedirs(os.path.dirname(OUT_GLB), exist_ok=True)
 	for o in list(bpy.context.scene.objects):
 		o.select_set(o.type == "MESH")
 	bpy.ops.export_scene.gltf(filepath=OUT_GLB, export_format="GLB", use_selection=True,
-		export_vertex_color="ACTIVE", export_normals=True, export_apply=True)
+		export_vertex_color="NONE", export_normals=True, export_apply=True, export_image_format="AUTO")
 	total = sum(len(o.data.polygons) for _, o in pieces.values())
 	data = {
 		"height": HEIGHT,
 		"joints": {k: {"pos": list(to_godot((Vector(v[0]) - Vector((0, 0, lo.z))) * s)), "parent": v[1]} for k, v in JOINTS.items()},
-		"face": {"center": [FACE_CENTER[0] * s, (FACE_CENTER[1] - JOINTS["head"][0][2]) * s], "size": FACE_SIZE * s},
+		"face": {"center": [FACE_CENTER[0] * s, (FACE_CENTER[1] - JOINTS["head"][0][2]) * s], "size": FACE_SIZE * s,
+			"textures": ["res://assets/characters/mannequin/face_w2_s0.png"]},
 		"faces_total": total,
 	}
 	with open(OUT_JSON, "w", encoding="utf-8") as f:
 		json.dump(data, f, ensure_ascii=False, indent=1)
 	print("saved", OUT_GLB, "faces", total)
-
-
-def face_neighbors(mesh):
-	edge_faces = {}
-	for p in mesh.polygons:
-		for ek in p.edge_keys:
-			edge_faces.setdefault(ek, []).append(p.index)
-	nbr = [set() for _ in mesh.polygons]
-	for fs in edge_faces.values():
-		for a in fs:
-			for b in fs:
-				if a != b:
-					nbr[a].add(b)
-	return nbr
-
-
-def remove_islands(mesh, lab, min_size, keep_small=None):
-	"""같은 색으로 이어진 면 묶음이 min_size(색마다 keep_small로 따로)보다 작으면 둘레에서 가장 많은 색으로 바꾼다 (부품 전체가 한 섬이면 그대로)."""
-	nbr = face_neighbors(mesh)
-	lab = lab.copy()
-	for _ in range(3):
-		seen = np.zeros(len(lab), dtype=bool)
-		changed = False
-		for start in range(len(lab)):
-			if seen[start]:
-				continue
-			comp, stack = [], [start]
-			seen[start] = True
-			while stack:
-				f = stack.pop(); comp.append(f)
-				for n in nbr[f]:
-					if not seen[n] and lab[n] == lab[start]:
-						seen[n] = True; stack.append(n)
-			need = (keep_small or {}).get(int(lab[start]), min_size)
-			if len(comp) >= need or len(comp) == len(lab):
-				continue
-			border = [lab[n] for f in comp for n in nbr[f] if lab[n] != lab[start]]
-			if border:
-				vals, cnt = np.unique(border, return_counts=True)
-				lab[comp] = vals[np.argmax(cnt)]
-				changed = True
-		if not changed:
-			break
-	return lab
-
-
-def smooth_labels(mesh, lab, passes):
-	"""면마다 이웃(모서리 공유) 면 색의 다수결. 자기 색이 이웃 중 2개 미만이면 다수 색으로 바꿈."""
-	edge_faces = {}
-	for p in mesh.polygons:
-		for ek in p.edge_keys:
-			edge_faces.setdefault(ek, []).append(p.index)
-	nbr = [[] for _ in mesh.polygons]
-	for fs in edge_faces.values():
-		for a in fs:
-			for b in fs:
-				if a != b:
-					nbr[a].append(b)
-	lab = lab.copy()
-	for _ in range(passes):
-		new = lab.copy()
-		for i, ns in enumerate(nbr):
-			if not ns:
-				continue
-			vals, cnt = np.unique(lab[ns], return_counts=True)
-			same = cnt[vals == lab[i]].sum() if (vals == lab[i]).any() else 0
-			if same < 2:
-				new[i] = vals[np.argmax(cnt)]
-		lab = new
-	return lab
 
 
 def fit_view(v, pts, ufn, ucenter_mod, zlo, zhi):
@@ -388,12 +430,82 @@ def make_ball(name, center, r):
 	ob = bpy.data.objects.new(name, me); bpy.context.collection.objects.link(ob)
 	ob.location = center
 	bpy.context.view_layer.update()
-	col = srgb_to_linear(np.array(PALETTE["joint"], dtype=np.float32) / 255.0)
-	attr = me.color_attributes.new("Col", "FLOAT_COLOR", "CORNER")
-	me.color_attributes.active_color = attr
-	for li in range(len(me.loops)):
-		attr.data[li].color = (col[0], col[1], col[2], 1.0)
+	uvl = me.uv_layers.new(name="UVMap")
+	for l in uvl.data:
+		l.uv = (0.988, 0.988)  # 아틀라스 구석의 관절 색 자리
 	return ob
+
+
+def box_sum(mask, r):
+	"""(2r+1)x(2r+1) 창 안 True 개수."""
+	a = np.pad(mask.astype(np.int32), ((r + 1, r), (r + 1, r)))
+	c = a.cumsum(0).cumsum(1)
+	k = 2 * r + 1
+	return c[k:, k:] - c[:-k, k:] - c[k:, :-k] + c[:-k, :-k]
+
+
+def keep_big_parts(mask, min_px):
+	"""4방향으로 이어진 덩어리 중 min_px 이상만 남김."""
+	h, w = mask.shape
+	out = np.zeros_like(mask)
+	seen = np.zeros_like(mask)
+	ys, xs = np.nonzero(mask)
+	for y0, x0 in zip(ys, xs):
+		if seen[y0, x0]:
+			continue
+		comp, stack = [], [(y0, x0)]
+		seen[y0, x0] = True
+		while stack:
+			y, x = stack.pop(); comp.append((y, x))
+			for yy, xx in ((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)):
+				if 0 <= yy < h and 0 <= xx < w and mask[yy, xx] and not seen[yy, xx]:
+					seen[yy, xx] = True; stack.append((yy, xx))
+		if len(comp) >= min_px:
+			cy, cx = zip(*comp); out[list(cy), list(cx)] = True
+	return out
+
+
+def make_face_texture(views, to_img):
+	"""정면 그림에서 얼굴 네모를 오려 투명 배경 얼굴 그림으로. 위치·크기는 색 굽기와 같은 맞춤값."""
+	full = load_view("W2_front_face.png")["px"]
+	noface = views["front"][0]["px"]
+	n = FACE_TEX
+	gx, gz = np.meshgrid(np.linspace(-0.5, 0.5, n), np.linspace(0.5, -0.5, n))
+	P = np.stack([FACE_CENTER[0] + gx * FACE_SIZE, np.zeros_like(gx), FACE_CENTER[1] + gz * FACE_SIZE], axis=-1).reshape(-1, 3)
+	x, y = to_img("front", P)
+	h, w = full.shape[:2]
+	xi = np.clip(np.round(x).astype(int), 0, w - 1)
+	yi = np.clip(np.round(y).astype(int), 0, h - 1)
+	a = full[yi, xi]
+	b = noface[yi, xi]
+	diff = np.abs(a - b).sum(1)
+	lum_b = b.mean(1)
+	sat_b = b.max(1) - b.min(1)
+	skin_b = (lum_b > 0.78) & (sat_b < 0.16)
+	feat = ((diff > 0.18) & skin_b).reshape(n, n)
+	# 가는 선 잡티(두 그림의 미세한 차이) 지우기: 한 칸 깎았다 다시 키움. 입(빨강)은 작아도 남김
+	er = feat.copy()
+	for dy_, dx_ in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+		er &= np.roll(np.roll(feat, dy_, 0), dx_, 1)
+	op = er.copy()
+	for dy_, dx_ in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+		op |= np.roll(np.roll(er, dy_, 0), dx_, 1)
+	ar = a.reshape(n, n, 3)
+	red = (ar[..., 0] > 0.55) & (ar[..., 1] < 0.45) & (ar[..., 0] - ar[..., 1] > 0.3) & skin_b.reshape(n, n)
+	keep = keep_big_parts(feat, 150) | (keep_big_parts(red & feat, 10))
+	keep[int(n * 0.85):] = False  # 턱 가장자리 자국
+	alpha = keep.astype(np.float32)
+	grow = alpha.copy()
+	for dy_, dx_ in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+		grow = np.maximum(grow, np.roll(np.roll(alpha, dy_, 0), dx_, 1) * 0.6)
+	rgb = a.reshape(n, n, 3)
+	rgba = np.concatenate([rgb, grow[..., None]], axis=2)
+	img = bpy.data.images.new("face_w2_s0", n, n, alpha=True)
+	img.pixels = rgba[::-1].ravel()
+	img.filepath_raw = OUT_FACE
+	img.file_format = "PNG"
+	img.save()
+	print("face texture", OUT_FACE, "alpha px", int((alpha > 0).sum()))
 
 
 main()

@@ -39,6 +39,8 @@ var _base_pos: Dictionary = {}
 ## 3단계에서 머리를 뒤집을 때 올려 주는 높이 (머리 관절 위로 머리 끝까지)
 var _head_height: float = 0.36
 var _face_mat: ShaderMaterial
+## 단계별 얼굴 그림 (Tripo 모델이면 json의 얼굴 그림으로 바꿈)
+var _face_textures: Array[String] = FACE_TEXTURES.duplicate()
 var _unseen_time: float = 0.0
 var _was_seen: bool = true
 var pose_change_count: int = 0
@@ -286,13 +288,18 @@ func _build_tripo() -> void:
 		var parent_pos: Vector3 = Vector3.ZERO if parent_key == null else world_pos[parent_key]
 		_joint(parent, key, world_pos[key] - parent_pos)
 	var face: Dictionary = data["face"]
-	_face_mat = _mat(Color.WHITE, 0.4, 0.5)
-	_face_mat.set_shader_parameter("use_vcol", true)
+	# 무광 (Family Time식 평면 색): 반사 0
+	_face_mat = _mat(Color.WHITE, 1.0, 0.0)
 	_face_mat.set_shader_parameter("use_face", true)
 	_face_mat.set_shader_parameter("face_center", Vector2(face["center"][0], face["center"][1]))
 	_face_mat.set_shader_parameter("face_size", Vector2(face["size"], face["size"]))
+	# 0단계 = W2 원본에서 오린 얼굴. 1단계도 우선 같은 그림, 2·3단계는 아직 예전 임시 그림 [작업값]
+	if face.has("textures"):
+		var w2: String = face["textures"][0]
+		_face_textures = [w2, w2, FACE_TEXTURES[2], FACE_TEXTURES[3]]
 	var finish_mats: Dictionary = {}
 	var inst: Node = (load(TRIPO_SCENE) as PackedScene).instantiate()
+	var atlas: Texture2D = null
 	var head_top: float = 0.0
 	for node: Node in inst.find_children("*", "MeshInstance3D", true, false):
 		var src: MeshInstance3D = node
@@ -305,15 +312,19 @@ func _build_tripo() -> void:
 		part.name = src.name
 		part.mesh = src.mesh
 		for s: int in range(src.mesh.get_surface_count()):
+			var m: Material = src.mesh.surface_get_material(s)
+			if atlas == null and m is BaseMaterial3D:
+				atlas = (m as BaseMaterial3D).albedo_texture
+				_face_mat.set_shader_parameter("use_tex", true)
+				_face_mat.set_shader_parameter("albedo_tex", atlas)
 			if part_name == "face":
 				part.set_surface_override_material(s, _face_mat)
 				continue
-			var m: Material = src.mesh.surface_get_material(s)
 			var kind: String = m.resource_name if m != null and PART_FINISH.has(m.resource_name) else "cloth"
 			if not finish_mats.has(kind):
-				var f: Vector2 = PART_FINISH[kind]
-				var mat := _mat(Color.WHITE, f.x, f.y)
-				mat.set_shader_parameter("use_vcol", true)
+				var mat := _mat(Color.WHITE, 1.0, 0.0)
+				mat.set_shader_parameter("use_tex", true)
+				mat.set_shader_parameter("albedo_tex", atlas)
 				finish_mats[kind] = mat
 			part.set_surface_override_material(s, finish_mats[kind])
 		(joints[key] as Node3D).add_child(part)
@@ -326,7 +337,7 @@ func _build_tripo() -> void:
 
 func set_stage(s: int) -> void:
 	stage = clampi(s, 0, 3)
-	_face_mat.set_shader_parameter("face_tex", load(FACE_TEXTURES[stage]))
+	_face_mat.set_shader_parameter("face_tex", load(_face_textures[stage]))
 	_reset_pose()
 	if stage >= 2:
 		(joints["head"] as Node3D).rotation.z = deg_to_rad(24.0)
