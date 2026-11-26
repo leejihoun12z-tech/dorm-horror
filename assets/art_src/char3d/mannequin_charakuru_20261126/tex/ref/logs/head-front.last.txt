@@ -1,0 +1,1 @@
+SOURCE=C:/Users/leeji/.codex/generated_images/01a21881-5be6-7671-a727-3d359f84fe21/exec-34e8758e-60bd-49a6-8338-d612aac84187.png OUT=NOT_COPIED (read-only workspace). The PNG has a real alpha channel and visible stray specks around the silhouette.

@@ -1,0 +1,1 @@
+SOURCE=C:/Users/leeji/.codex/generated_images/01a21882-a3e6-7651-99b3-9f603a821f39/exec-dcb32433-4c0c-4f4f-b301-8e55ae643a4a.png OUT=not copied (workspace is read-only)
