@@ -5,6 +5,8 @@ extends SceneTree
 var dir: String = "res://.screenshots"
 var cam: Camera3D
 var view: int = 0  # --view=1 색만(조명 없음) · 2 회색 모양 + 조명
+var outline: bool = true  # --outline=0 외곽선 껍데기 끔
+var flat_light: bool = false  # --flat=1 면 방향과 상관없이 빛 받는 시험 셰이더
 
 func _init() -> void:
 	for a: String in OS.get_cmdline_user_args():
@@ -12,6 +14,10 @@ func _init() -> void:
 			dir = a.substr(6)
 		elif a.begins_with("--view="):
 			view = int(a.substr(7))
+		elif a.begins_with("--outline="):
+			outline = a.substr(10) != "0"
+		elif a.begins_with("--flat="):
+			flat_light = a.substr(7) == "1"
 	DirAccess.make_dir_recursive_absolute(dir)
 	_run()
 
@@ -33,8 +39,7 @@ func _run() -> void:
 	var m: Mannequin = scene.get("mannequin")
 	m.watcher = cam
 	m.set_stage(0)
-	if view != 0:
-		_set_view(m, view)
+	_set_view(m, view)
 	var mp: Vector3 = m.global_position
 	# 키 1.55 기준 높이(키 1.0 값 × 1.55). 앞 = +Z
 	var shots: Array = [
@@ -47,6 +52,13 @@ func _run() -> void:
 		["c6_legs", Vector3(0, 0.33, 0.06), 20.0, 0.34],
 		["c7_coat_in", Vector3(0, 0.40, 0.03), 200.0, 0.46],
 	]
+	# 실제 거리: 1인칭 눈높이 1.5m에서 1.2m·2.5m 떨어져 봄 (원근, 시야 75도)
+	for dist: float in [1.2, 2.5]:
+		cam.projection = Camera3D.PROJECTION_PERSPECTIVE
+		cam.fov = 75.0
+		cam.global_position = mp + Vector3(0.0, 1.5, dist)
+		cam.look_at(mp + Vector3(0.0, 1.05, 0.0), Vector3.UP)
+		await _shot("d%02d_view" % int(dist * 10.0))
 	for s: Array in shots:
 		var p: Vector3 = s[1]
 		var target: Vector3 = mp + Vector3(p.x, p.y * 1.55, p.z * 1.55)
@@ -64,7 +76,12 @@ func _set_view(n: Node, v: int) -> void:
 		for i: int in range(mi.get_surface_override_material_count()):
 			var mat: Material = mi.get_surface_override_material(i)
 			if mat is ShaderMaterial:
-				(mat as ShaderMaterial).set_shader_parameter("debug_view", v)
+				var sm: ShaderMaterial = mat
+				sm.set_shader_parameter("debug_view", v)
+				if not outline:
+					sm.next_pass = null
+				if flat_light:
+					sm.shader = load("res://tools/dev/char_toon_flat_test.gdshader")
 		if mi.material_override is ShaderMaterial:
 			(mi.material_override as ShaderMaterial).set_shader_parameter("debug_view", v)
 	for c: Node in n.get_children():
