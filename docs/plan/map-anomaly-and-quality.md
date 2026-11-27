@@ -58,3 +58,27 @@ _이어지는 문서: `hq-environment-plan.md`(엔진·제작법). 아래는 모
 
 ## 출처
 gamedeveloper.com(Layers of Fear 불안정한 레벨 디자인, P.T. 분석) · unrealengine.com(Layers of Fear UE5) · blog.playstation.com·gamedeveloper.com(Superliminal 기법) · DigiDigger "How do non-euclidean games work"(Antichamber) · store.godotengine.org·github.com/VojtaStruhar(Portals 3D) · github.com/donitzo(simple portal system) · arxiv.org/html/2609.36777(Code4Scene, 2026-11) · browsergaming.com(AI 3D로 만든 게임 13개, 2026-11) · gamesalchemy.substack.com(AI 3D 제작 교훈) · strayspark.studio(AI 공포 맵 하루 제작) · latentnine.itch.io(AI 3D 소품 한계) · Steam 상점 스크린샷(비교 그림, 저장소 제외)
+
+## 6. D단(AAA·고밀도)도 되나? (2026-11-27, 사용자 질문) [후보]
+**한 줄:** 게임 전체를 D단으로는 어렵다. **좁은 공간 몇 곳만 D단에 가깝게**는 된다. 단, D단을 목표로 하면 엔진은 언리얼 쪽이 맞다.
+
+**작은 팀이 D단에 가까이 간 실제 예**
+| 게임 | 인원·기간 | 어떻게 |
+|---|---|---|
+| MADiSON | **2명, 약 5년**(Unity) | 감독이 그림·연출 전부 담당. 3ds Max·Substance Painter/Designer·ZBrush로 직접 제작. 집 한 채에 모든 구석까지 소품·이야기. 개발자 말: "Unity로 이런 무거운 그림을 내느라 수백 가지 문제를 풀었다" |
+| The Exit 8 | **1명, 약 9개월**(UE5) | 개발자가 게임 회사 3D 배경·재질 전문가 출신(4~5년). 지하 통로 하나를 반복. 재질은 Substance로 직접, 사람은 MetaHuman·스캔 인물 에셋, 카메라 흔들림·후처리도 구매 에셋. "에셋은 쓸 수 있으면 쓴다" |
+| SILENT HILL 2 리메이크 · Layers of Fear | 큰 스튜디오(UE5) | 실시간 GI·고밀도 소품·수많은 아티스트 |
+
+**D단에 필요한 것 (우리에게 없는 것)**
+1. **숙련된 3D 배경·재질 아티스트의 손** — MADiSON·The Exit 8 모두 핵심이 이것. AI는 지금 "빠른 80%"까지(§3).
+2. **사진 같은 에셋 생태계** — 언리얼은 MetaHuman·스캔 에셋·실시간 GI(Lumen)가 바로 붙음. Godot는 이 생태계가 작고, 구석 그늘·계단 현상 줄이기 품질도 언리얼보다 낮음.
+3. **시간** — 공간 한 곳을 D단으로 채우는 데 몇 달 단위.
+
+**선택지**
+| | 목표 | 엔진 | 현실성 |
+|---|---|---|---|
+| ① 추천 | 전체 C단 + **중요한 공간 2~3곳(사감실·주인공 방·밤 클라이맥스 복도)만 D단에 가깝게** — 트레일러·스크린샷용 | Godot 유지 | 높음 |
+| ② | 전체 D단에 가깝게 | **언리얼로 바꿈** + 구매 사실 에셋 대량 + 재질 직접 손질 | 낮음~중간: 공간 수를 크게 줄여야 함(The Exit 8처럼 1~2곳 반복) |
+| ③ | D단 + 공간 많음 | — | 1인 + AI로는 어려움 |
+- 참고: 종이인형 캐릭터는 배경이 사실적일수록 대비가 커짐 → 의도한 섬뜩함이 될 수도, 붕 떠 보일 수도 있음. 복도 한 칸 시험에서 같이 확인.
+- 출처: perpgames.com·davinci.edu.ar·shacknews(MADiSON 2인 팀·Unity·도구) · automaton-media.com·gamemakers.jp·gamebusiness.jp(The Exit 8 1인·UE5·9개월·에셋 사용)
