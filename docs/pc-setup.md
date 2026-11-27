@@ -12,11 +12,7 @@ git clone https://github.com/leejihoun12z-tech/dorm-horror.git
 - **A. PC에서 Claude Code 세션 열기 (추천)**: Claude 데스크톱 앱 → Claude Code → 이 폴더를 열고 아래 첫 메시지를 붙여 넣는다. 크롬·Godot·Blender를 바로 쓴다.
 - **B. 클라우드 세션이 PC 폴더를 쓰게 하기**: Claude 데스크톱 앱 → 설정 → Claude Code → Remote Control에서 이 폴더를 추가하고 켜 둔다. 그러면 클라우드 세션이 그 폴더를 쓰겠다고 요청할 수 있다(사용자 승인 창이 뜸).
 
-첫 메시지 (A):
-```
-이 저장소는 새 게임(기숙사 공포 미연시)이야. CLAUDE.md와 docs/STATUS.md를 보고 시작해.
-다음 할 일 2번(Family Time 느낌으로 기숙생 1명 3D 시험)을 준비해 줘. 필요한 설치는 물어보고 해.
-```
+첫 메시지 (A): **`docs/new-chat-start.md` §1을 쓴다** (2026-11-27 갱신 — 예전 「다음 할 일 2번(Family Time 3D)」 메시지는 [폐기·대체]).
 
 ## 3. 시험에 필요한 프로그램 (Claude가 설치 전에 물어봄)
 | 프로그램 | 쓰는 곳 | 비용 |
@@ -24,5 +20,5 @@ git clone https://github.com/leejihoun12z-tech/dorm-horror.git
 | Godot 4.7.2 | 게임 | 무료 (이미 있음) |
 | Blender 4.x | 로우폴리 몸·머리카락 정리, 리깅 | 무료 |
 | Tripo 웹 (무료판) | 로우폴리 초안 (시험용, 상업 불가) | 무료 |
-| ComfyUI (이미 있음, MyGodotGame 아트 작업) | 얼굴·표정 그림 | 무료 |
+| ComfyUI (이미 있음, MyGodotGame 아트 작업) | 캐릭터 그림 · 배경 룩 탐색(SDXL + ControlNet union, `tools/look/`) | 무료 |
 - 결제가 필요한 것(Tripo 유료 등)은 사용자 승인 없이 하지 않는다.
