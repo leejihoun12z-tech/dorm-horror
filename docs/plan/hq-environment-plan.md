@@ -92,3 +92,20 @@ _새 조건: 배경 룩 = 회차가 갈수록 카툰 → 현실(리미널 형광
 - 다시 본 판단(Claude): **거의 비김 → 시험으로 정하기가 더 맞아짐.** Godot = 가볍고 이미 "찍어서 확인" 고리가 돎. Unity = 이번 달 공식 AI 도구가 정식이 됐고, 이 장르 실례·자산·Shader Graph가 많음.
 - 시험안: 같은 "카툰 → 현실 복도 한 칸"을 ① Godot(지금 도구) ② Unity 6.3 + CLI 1.0(이 PC에 Hub 있음)으로. 비교 = 정지 화면 0/50/100% · Claude 혼자 된 비율(사용자가 클릭한 횟수) · 걸린 시간.
 - 출처: unity.com/the-unity-cli-1.0-is-here · discussions.unity.com(Unity CLI 발표 글, 7월~) · gaming.net(CLI 1.0) · docs.unity.com(Unity 6.3 LTS 새 기능) · cgchannel.com(Unity 6.3·Godot 4.7) · dev.to(mistyhx·ziva·abagames·salvo10f) · gamesradar.com(Slay the Spire 2·Godot 성장) · Scout 보드
+
+### 6-2. 조건 추가: 비싼 자산은 못 삼, 싼 것·무료 위주 + **고점(화질 상한)이 높은 쪽** (2026-11-28 사용자) [후보]
+- 새 소식: **Megascans 2만 3천여 개가 다시 무료(2026-11-12부터, 이번엔 계속)** — Fab Standard 사용권이라 Godot·Unity에서도 씀, AI 사용 허용으로 바뀜(cgchannel·creativebloq 2026-11). 무료 자산의 질이 크게 올라감. 단 Megascans는 고면수 스캔이라 **Unreal(Nanite·Fab 바로 넣기)에서 가장 손이 덜 감**.
+- 고점 기준으로 다시 보면 **언리얼을 다시 후보에** 넣어야 함(§2에서 뺀 이유 중 "클라우드에서 실행 불가"는 PC 세션이라 사라짐).
+
+| | Godot 4.7 | Unity 6.3 URP | Unreal 5.7/5.8 |
+|---|---|---|---|
+| 카툰 시작의 고점 | 셰이더 직접 → 가능, 실례 적음 | 원신·젠레스·우마무스메 등 툰 최고 실례 많음 | Hi-Fi Rush·명조(툰, UE) — 최고 실례 있음 |
+| 현실 끝판(리미널)의 고점 | 가장 낮음(TAA·AO·GI 품질) | 중상(MADiSON은 "수백 가지 문제 풂") | **가장 높음** — Lumen 간접광, The Exit 8 등 리미널 공포 다수 |
+| 무료·싼 자산 | Megascans·Poly Haven·Kenney 등(직접 줄여 넣기) | 같음 + Asset Store 무료·싼 것 | 같음 + **Megascans·Fab 월간 무료가 가장 쉽게 들어감** |
+| Claude가 다루기 | 가장 쉬움(글자 파일·창 없이 찍기) | 공식 CLI 1.0 + Claude Code 플러그인(편집기 켜 둠) | 공식 도구 없음, 커뮤니티 MCP 여럿(5.7·5.8) + 편집기 Python 스크립트. 블루프린트는 이진 파일 |
+| 8GB 그래픽카드(RTX 5060) | 여유 | 여유 | 실내라면 설정으로 될 듯, **직접 재 봐야 함**(1440p Lumen 게임에서 5060 8GB 약 23fps 사례, 8GB는 최소라는 의견) |
+| 설치 | 있음 | Hub만 있음, 편집기 설치 필요 | 없음, Epic 런처 + 편집기 수십 GB |
+
+- 판단(Claude): 고점이 우선이면 **Godot는 뒤로**(현실 끝판의 상한이 가장 낮음). **Unreal = 고점 최고 · 무료 Megascans와 가장 잘 맞음 · 대신 무겁고 Claude 조작이 덜 매끄러움. Unity = 그 사이, AI 도구는 공식.**
+- 시험안(추천): 같은 "카툰 → 현실 복도 한 칸"을 **Unreal과 Unity로**(Godot는 지금 판이 이미 있으니 비교용 기준) → 현실도 0/50/100% 정지 화면 · fps(8GB) · Claude 혼자 된 비율. 설치는 사용자 승인 뒤.
+- 출처: cgchannel.com/2026/11/epic-has-made-megascans-free-again-for-good-this-time · creativebloq.com(Megascans 무료) · dev.epicgames.com(Fab 사용권) · pypi.org(unrealmcp·unreal-engine-mcp, 5.7·5.8) · wccftech.com(The Outer Worlds 2 성능) · forums.unrealengine.com(UE5 VRAM)
