@@ -281,6 +281,18 @@
       "name": "손그림 애니 배경",
       "ckpt": "anime",
       "prompt": "no humans, scenery, indoors, hand-painted anime background, warm afternoon light, nostalgic, masterpiece, high score"
+    },
+    {
+      "id": "S49_subcul_toon",
+      "name": "서브컬처 카툰 렌더",
+      "ckpt": "anime",
+      "prompt": "no humans, scenery, indoors, anime game screenshot, 3d toon render, cel shading, clean flat colors, soft simple shading, bright and colorful, masterpiece, high score"
+    },
+    {
+      "id": "S50_real_vhs",
+      "name": "현실 — 옛 비디오·리미널 사진",
+      "ckpt": "base",
+      "prompt": "real photograph, 1990s VHS video still from a dormitory promotional video, slightly overexposed fluorescent lighting with a faint green tint, washed out colors, realistic worn materials, mundane, liminal space, video noise"
     }
   ],
   "moods": [
@@ -390,5 +402,21 @@
       }
     }
   ],
-  "_states_설명": "상태 3단계(run_comfy_states.py): D1 낮을 먼저 뽑고, D2·N1은 그 낮 그림의 색·밝기를 grade로 먼저 바꾼 뒤 img2img(denoise)로 다시 그려 같은 배경을 유지한다."
+  "_states_설명": "상태 3단계(run_comfy_states.py): D1 낮을 먼저 뽑고, D2·N1은 그 낮 그림의 색·밝기를 grade로 먼저 바꾼 뒤 img2img(denoise)로 다시 그려 같은 배경을 유지한다.",
+  "realism": {
+    "_설명": "카툰→현실 단계(run_comfy_realism.py): 현실 끝판(마지막 단계)은 같은 구도로 txt2img, 중간 단계는 카툰 낮과 현실 끝판을 mix 비율로 섞은 뒤 denoise로 약하게 다시 그림. 마지막 단계는 밤도.",
+    "target": "S50_real_vhs",
+    "real_state": {
+      "id": "Dreal",
+      "name": "평범한 낮(현실)",
+      "prompt": "ordinary weekday afternoon, ceiling fluorescent lights on, plain daylight from the window, realistic photo",
+      "denoise": 1.0
+    },
+    "mix": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "denoise": 0.35
+  }
 }
