@@ -22,6 +22,8 @@ const EDGE_SHADER: Shader = preload("res://game/characters/paper_edge.gdshader")
 @export var hops_per_meter: float = 2.4
 ## 걸을 때 좌우 기울기 (도)
 @export var hop_tilt_deg: float = 4.0
+## 짧은 음성 음높이 (캐릭터마다 다르게. 1.0 = 원래 소리)
+@export var voice_pitch: float = 1.0
 
 var pose: String = "front"
 var _pivot: Node3D
@@ -33,6 +35,11 @@ var _showing_back: bool = false
 var _phase: float = 0.0
 var _last_pos: Vector3
 var _walk_blend: float = 0.0
+var _bubble: Sprite3D
+var _bubble_label: Label
+var _bubble_view: SubViewport
+var _bubble_tween: Tween
+var _voice: AudioStreamPlayer3D
 
 func _ready() -> void:
 	_pivot = Node3D.new()
@@ -52,6 +59,86 @@ func _ready() -> void:
 	set_pose("front")
 	_set_back_tex(poses.get("back") as Texture2D)
 	_last_pos = global_position
+	_build_bubble()
+	_voice = AudioStreamPlayer3D.new()
+	_voice.position = Vector3(0, height * 0.85, 0)
+	add_child(_voice)
+
+## 말풍선 한 줄 + 짧은 음성(있으면). 평소 대화용 — 긴 대화는 대화 화면에서
+func say(text: String, voice: AudioStream = null, seconds: float = 2.5) -> void:
+	_bubble_label.text = text
+	_bubble_view.size = Vector2i(maxi(160, int(_bubble_label.get_minimum_size().x) + 48), 112)
+	_bubble_view.render_target_update_mode = SubViewport.UPDATE_ONCE
+	_bubble.visible = true
+	_bubble.scale = Vector3.ONE * 0.2
+	if _bubble_tween != null:
+		_bubble_tween.kill()
+	_bubble_tween = create_tween()
+	_bubble_tween.tween_property(_bubble, "scale", Vector3.ONE * 1.08, 0.09)
+	_bubble_tween.tween_property(_bubble, "scale", Vector3.ONE, 0.06)
+	_bubble_tween.tween_interval(seconds)
+	_bubble_tween.tween_property(_bubble, "scale", Vector3.ZERO, 0.08)
+	_bubble_tween.tween_callback(func() -> void: _bubble.visible = false)
+	if voice != null:
+		_voice.stream = voice
+		_voice.pitch_scale = voice_pitch * randf_range(0.97, 1.03)
+		_voice.play()
+
+func _build_bubble() -> void:
+	_bubble_view = SubViewport.new()
+	_bubble_view.transparent_bg = true
+	_bubble_view.size = Vector2i(320, 112)
+	_bubble_view.render_target_update_mode = SubViewport.UPDATE_ONCE
+	add_child(_bubble_view)
+	var root_c := Control.new()
+	root_c.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_bubble_view.add_child(root_c)
+	var box := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.99, 0.98, 0.95)
+	sb.border_color = Color(0.08, 0.07, 0.08)
+	sb.set_border_width_all(4)
+	sb.set_corner_radius_all(26)
+	sb.content_margin_left = 20
+	sb.content_margin_right = 20
+	sb.content_margin_top = 10
+	sb.content_margin_bottom = 10
+	box.add_theme_stylebox_override("panel", sb)
+	box.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	box.offset_bottom = 82
+	root_c.add_child(box)
+	_bubble_label = Label.new()
+	_bubble_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_bubble_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	var font := SystemFont.new()
+	font.font_names = PackedStringArray(["Malgun Gothic", "Noto Sans CJK KR", "Noto Sans KR", "Apple SD Gothic Neo", "Unifont"])
+	_bubble_label.add_theme_font_override("font", font)
+	_bubble_label.add_theme_font_size_override("font_size", 34)
+	_bubble_label.add_theme_color_override("font_color", Color(0.08, 0.07, 0.08))
+	box.add_child(_bubble_label)
+	# 꼬리: 테두리 삼각형 위에 흰 삼각형
+	var tail_b := Polygon2D.new()
+	tail_b.polygon = PackedVector2Array([Vector2(-18, 76), Vector2(18, 76), Vector2(0, 108)])
+	tail_b.color = Color(0.08, 0.07, 0.08)
+	var tail_w := Polygon2D.new()
+	tail_w.polygon = PackedVector2Array([Vector2(-12, 72), Vector2(12, 72), Vector2(0, 99)])
+	tail_w.color = Color(0.99, 0.98, 0.95)
+	var tail := Node2D.new()
+	tail.add_child(tail_b)
+	tail.add_child(tail_w)
+	root_c.add_child(tail)
+	root_c.resized.connect(func() -> void: tail.position.x = root_c.size.x * 0.5)
+	_bubble = Sprite3D.new()
+	_bubble.texture = _bubble_view.get_texture()
+	_bubble.pixel_size = 0.003
+	_bubble.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	_bubble.shaded = false
+	_bubble.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+	_bubble.centered = true
+	_bubble.offset = Vector2(0, 56)
+	_bubble.position = Vector3(0, height + 0.12, 0)
+	_bubble.visible = false
+	add_child(_bubble)
 
 func _quad(is_back: bool) -> MeshInstance3D:
 	var q := MeshInstance3D.new()

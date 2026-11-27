@@ -103,6 +103,12 @@ func _stills() -> void:
 	await _frames(10)
 	await _shot("pp_5_pose")
 	puppet.set_pose("front")
+	# 말풍선 (평소 대화)
+	_aim(Vector3(0.35, 1.5, -3.4), Vector3(0, 1.15, -6.5))
+	await _frames(10)
+	puppet.say("사감님, 안녕하세요!")
+	await _frames(12)
+	await _shot("pp_7_bubble")
 	# 밤: 손전등 → 카드 모양 그림자가 벽·바닥에
 	scene.call("set_night", true)
 	(scene.get("player") as Player).flashlight.visible = false
