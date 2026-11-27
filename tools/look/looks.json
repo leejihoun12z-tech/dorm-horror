@@ -339,5 +339,15 @@
       "name": "촛불 정전",
       "prompt": "blackout, lit only by a few candles and a phone screen, warm flicker"
     }
-  ]
+  ],
+  "spaces_short": {
+    "corridor": "Korean dormitory hallway, room doors on both sides, shoe cabinets, red fire hydrant box, notice board, ceiling lights, fire door at the end, empty",
+    "corridor_b": "Korean dormitory hallway, close view of a room door and a shoe cabinet, recycling bins, empty",
+    "room": "Korean dormitory double room, two beds by the window, two desks with shelves, wardrobes, curtains, empty",
+    "room_b": "Korean dormitory double room seen from the beds toward the door, desks, wardrobes, paper rules sheet on the door, empty",
+    "office": "dormitory supervisor office, reception window, desk with monitor and CCTV screens, key cabinet, filing cabinets, sofa, empty",
+    "stairs": "dormitory stairwell, U-shaped concrete stairs, metal handrail, landing window, fire door, empty",
+    "laundry": "dormitory laundry room, row of washing machines and dryers, folding table, laundry basket, drying rack, empty",
+    "lounge": "dormitory lounge, sofa and low table, TV, two glowing vending machines, round tables and chairs, bookshelf, large window, empty"
+  }
 }
