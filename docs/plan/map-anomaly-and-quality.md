@@ -82,3 +82,36 @@ gamedeveloper.com(Layers of Fear 불안정한 레벨 디자인, P.T. 분석) · 
 | ③ | D단 + 공간 많음 | — | 1인 + AI로는 어려움 |
 - 참고: 종이인형 캐릭터는 배경이 사실적일수록 대비가 커짐 → 의도한 섬뜩함이 될 수도, 붕 떠 보일 수도 있음. 복도 한 칸 시험에서 같이 확인.
 - 출처: perpgames.com·davinci.edu.ar·shacknews(MADiSON 2인 팀·Unity·도구) · automaton-media.com·gamemakers.jp·gamebusiness.jp(The Exit 8 1인·UE5·9개월·에셋 사용)
+
+## 7. AI로 배경을 만든 실제 사례 (2026-11-27, 사용자: "작은 팀 말고 AI로 만든 사례") [후보]
+비교 그림: 스팀 스크린샷 12장(채팅으로만 보냄, 저장소 제외). 등급은 §1의 A~D 기준으로 Claude가 눈으로 매긴 것.
+
+**출시·출시 예정 게임 (스팀 "AI 생성 콘텐츠" 공개 문구 기준)**
+| 게임 | AI가 만든 것 (개발자 공개 문구) | 결과 |
+|---|---|---|
+| A taste of home (일본 시골 공포, 2025-12) | **3D 모델과 텍스처** | 긍정 94%(94명). 부엌·마을이 B~C단. AI 공개해도 평이 좋음 |
+| The One I Saw (UE, 출시 전) | 환경 소품·게임 속 사진·초상화 | 따뜻한 실내 B~C단 — **조명이 품질을 끌어올림** |
+| Revengeful dwell | Meshy로 환경 모델·소품·텍스처(유료 상업 라이선스) + 손질 | B단, 어둠을 많이 씀 |
+| Crimson System (**Godot**, 출시 전) | 코드·텍스처·모델·소리 **전부** 로컬 AI, 적은 2D 스프라이트 + 3D 세계 | B단 스타일. "1인 + AI로 어디까지"의 실험작 |
+| SCREAM you LOSE (일본 학교·신사) | 일부 3D 모델·텍스처 | B-, 긍정 90%(10명) |
+| 영덕 폐가 (한국 폐가, 2026-08) | 일부 3D 텍스처만 | B-, 긍정 80%(75명) |
+| ZERO VISIBILITY (2026-11) | 건물·소품·캐릭터 다수를 Tripo로 + 손질 | B-, 안개로 가림 |
+| Proyecto Huemul (2026-09) | 일부 3D 모델 | B-, 긍정 93%(15명), 어둠 |
+| (비교) Room 404 (UE5, 중국 아파트) | 환경은 **스캔 에셋**, AI는 그림·영상만 | C단, 긍정 88%(155명) — AI 게임보다 한 단 위 |
+
+**시연·실험 (게임 아님)**
+| 사례 | 무엇 | 배울 점 |
+|---|---|---|
+| Gaussian Mansion (World Labs Marble + UE5) | 콘셉트 그림 → AI 월드(스플랫) → 레일 슈터 | 그림 같은 분위기는 빠름. 투명·재질·잡티 문제, 자유 이동 게임엔 아직 |
+| World Labs Atlas Chisel (2026-11) | AI가 회색 상자 배치 → 같은 배치로 그림·영상·스플랫 | 자기 검사(떠 있는 부품·겹친 카메라)를 하며 고침. 결과는 스플랫 → 게임용은 메시 변환·정리 필요 |
+| Scenario "AAA in the Browser" | 에이전트가 만든 레벨, 그림자·구석 그늘·안개 빛줄기·바닥 반사·후처리 쌓기 | **"AAA 느낌"은 렌더 층 쌓기 + 조명 손질**. 스크립트로 모든 자리를 찍어 너무 밝은 곳을 숫자로 찾아 고침(과노출 397 → 17칸) |
+| Godot Town (Claude Opus 5.5, Godot 4.7) | 프롬프트 하나로 약 1시간에 중세 마을(집 140·나무 1,500) | 넓고 그럴듯한 블록아웃은 금방. 품질은 B단 아래 |
+| The Red Scarf (Claude Code + Tripo + Godot MCP) | Claude가 계획·코드·검사, Tripo가 모델·리깅 | 우리와 같은 도구 조합의 공식 예 |
+| Fable Showcase (UE, 여러 AI 에이전트) | 에이전트가 박물관 레벨 제작 | **사람 플레이 테스트가 자동 검사가 놓친 결함을 계속 찾음** — 에이전트 완료 보고는 믿을 근거가 못 됨 |
+
+**정리**
+1. **AI로 배경을 만든 출시작은 지금 B단~C단 아래가 대부분.** D단은 없음. C단 이상은 스캔·구매 사실 에셋 + 조명 실력이 만든 것(Room 404·The Exit 8).
+2. 공통 요령: AI 모델은 **손질 + 어둠·안개·좁은 공간**으로 약점을 가림. 품질 차이는 모델보다 **조명·후처리**에서 크게 남(The One I Saw, Scenario).
+3. AI 공개를 해도 공포 인디는 평이 나쁘지 않음(A taste of home 94%, Huemul 93%) — 단 수가 작고, "전부 AI"를 앞세운 게임은 아직 평가가 적음.
+4. 우리 적용: **AI(블록아웃·소품·재질) + 사진 스캔 재질 + 조명 렌더 층 쌓기 + 스크립트로 전 구역 밝기 측정**(Scenario 방식) → 목표 C단이 현실적. D단은 §6대로 공간 2~3곳만.
+- 출처: 스팀 상점(각 게임 AI 공개 문구) · aitransparencyindex.com · gameaicheck.com · worldlabs.ai(Gaussian Mansion) · dev.to(Atlas Chisel 체험) · scenario.com(AAA in the Browser) · ericr.org(Godot Town) · tripo3d.ai(The Red Scarf) · alexcoulombepresents.com(Fable Showcase)
