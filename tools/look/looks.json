@@ -1,0 +1,34 @@
+{
+  "_설명": "룩 탐색 표 (look-exploration-20261127.md). spaces = 공간 설명, styles = 화풍. 고치거나 늘리면 run_comfy_looks.py가 그대로 읽는다. ckpt는 models 키 이름.",
+  "models": {
+    "base": "sd_xl_base_1.0.safetensors",
+    "anime": "animagine-xl-4.0-opt.safetensors"
+  },
+  "controlnet": "controlnet-union-sdxl-1.0-promax.safetensors",
+  "negative": "people, person, human, girl, boy, character, text, watermark, signature, logo, frame, border, deformed, distorted perspective",
+  "night_suffix": ", at night, lights off, only moonlight through the window and a faint emergency light, very dark, deep shadows",
+  "spaces": {
+    "corridor": "interior of a Korean university women's dormitory hallway, long corridor, numbered room doors on both sides, small shoe cabinets beside the doors, red fire hydrant box on the wall, bulletin board with paper notices, ceiling fluorescent lights, double fire door with an exit sign at the far end, terrazzo floor, empty",
+    "room": "interior of a Korean university dormitory double room, two single beds by the far window, two study desks with shelves and laptops, two wardrobes near the door, window with curtains, small fridge, rug, student belongings, empty",
+    "office": "interior of a dormitory supervisor's office, reception window counter facing the hallway, desk with a computer monitor and four small CCTV screens, wall-mounted key cabinet full of room keys, whiteboard, filing cabinets, water dispenser, small sofa, wall clock, empty",
+    "stairs": "dormitory stairwell, concrete U-shaped stairs going up to a landing, metal handrail with balusters, window on the landing wall, floor number sign on the wall, fire door, empty"
+  },
+  "styles": [
+    {"id": "S01_photo", "name": "사실 사진", "ckpt": "base", "prompt": "photorealistic photograph, natural daylight, realistic materials, high detail, 35mm lens"},
+    {"id": "S02_liminal", "name": "리미널 형광", "ckpt": "base", "prompt": "liminal space photograph, overexposed fluorescent lighting, slight green tint, eerie emptiness, flash photo, slightly blurry"},
+    {"id": "S03_dollhouse", "name": "인형의 집·미니어처", "ckpt": "base", "prompt": "miniature dollhouse diorama, handcrafted tiny furniture, painted wood and printed paper wallpaper, tilt-shift macro photography, shallow depth of field"},
+    {"id": "S04_pencil", "name": "연필·볼펜 스케치", "ckpt": "base", "prompt": "pencil and ballpoint pen sketch on paper, cross-hatching, graphite, monochrome, hand-drawn lines, sketchbook"},
+    {"id": "S05_dither", "name": "1비트 디더", "ckpt": "base", "prompt": "1-bit dithered illustration, black and white only, ordered dithering, retro computer graphics, high contrast"},
+    {"id": "S06_anime_bg", "name": "애니 배경화", "ckpt": "anime", "prompt": "no humans, scenery, indoors, anime film background art, painted background, soft sunlight, detailed, masterpiece, high score"},
+    {"id": "S07_oil", "name": "유화", "ckpt": "base", "prompt": "painterly oil painting, visible thick brush strokes, impressionistic, moody muted colors, concept art"},
+    {"id": "S08_ligne_claire", "name": "평면 색·깔끔한 선", "ckpt": "base", "prompt": "ligne claire comic illustration, clean uniform black outlines, flat colors, no gradients, european comic panel"},
+    {"id": "S09_mono_red", "name": "흑백 + 빨강 한 색", "ckpt": "base", "prompt": "black and white photograph with one red accent color only, selective color, noir, high contrast"},
+    {"id": "S10_papercraft", "name": "종이·골판지 공예", "ckpt": "base", "prompt": "papercraft diorama, cut paper layers, cardboard furniture, visible paper texture and folds, handmade craft, studio lighting"},
+    {"id": "S11_vhs", "name": "옛 홍보 비디오", "ckpt": "base", "prompt": "1990s VHS video still from a dormitory promotional video, scanlines, chromatic aberration, washed out colors, video noise"},
+    {"id": "S12_ps1", "name": "PS1 저해상도", "ckpt": "base", "prompt": "PS1 video game screenshot, low poly 3D, low resolution blurry textures, dithering, 1998 game graphics"},
+    {"id": "S13_ink", "name": "수묵·먹선", "ckpt": "base", "prompt": "ink wash painting, brush and black ink on rice paper, minimal color, flowing ink strokes"},
+    {"id": "S14_collage", "name": "오려 붙인 콜라주", "ckpt": "base", "prompt": "mixed media collage, cut-out photographs and paper pieces, magazine scraps, layered paper textures, glue and tape"},
+    {"id": "S15_stage", "name": "연극 무대 세트", "ckpt": "base", "prompt": "theatre stage set built to look like this room, painted flat scenery, stage spotlights from above, black void around the set, visible wooden set construction"},
+    {"id": "S16_clay", "name": "점토 스톱모션", "ckpt": "base", "prompt": "claymation set, plasticine textures with fingerprints, stop-motion miniature, soft studio lighting"}
+  ]
+}
