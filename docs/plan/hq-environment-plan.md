@@ -73,3 +73,22 @@ _새 조건: 배경 룩 = 회차가 갈수록 카툰 → 현실(리미널 형광
 - 바뀌는 조건: 사용자가 편집기에서 직접 배치·조명을 만지고 싶다 / Asset Store 팩을 많이 사서 쓰겠다 / 유니티 편집기에 이미 익숙하다 → Unity.
 - 정하는 법(추천): **같은 "카툰 → 현실 복도 한 칸"을 두 엔진으로 하루씩** 만들어 정지 화면 품질 + 사용자가 손댄 양을 비교 → 고름.
 - 출처: unity.com/products/pricing-updates · unity.com/blog/unity-ai-mcp-how-to-get-started · docs.unity3d.com(com.unity.ai.assistant 2.0 Unity MCP) · 이 문서 §2
+
+### 6-1. 최신 자료·후기 더 (2026-11-28, 사용자: "관련 최신 자료 더, 스카우트 보드도") [후보]
+**바뀐 점: Unity 쪽 AI 지원이 크게 따라옴 → 차이가 좁아짐.**
+| 자료 | 내용 | 영향 |
+|---|---|---|
+| **Unity CLI 1.0** (unity.com 2026-11-17, Unite Tokyo) | 7월 베타 → 11월 정식. 에이전트가 켜진 편집기를 조작: 명령 실행·`unity eval`(편집기 안에서 C# 실행)·플레이 모드·빌드. Claude Code용 공식 플러그인·스킬(github Unity-Technologies/skills, "조명 설정" 포함). CLI·MCP 무료(7월 포럼 글). 1.x 동안 명령 호환 약속 | Godot의 "AI가 다루기 쉬움" 이점이 줄어듦. **이 PC의 Claude Code에는 Unity 스킬이 이미 깔려 있음**(unity-cli·URP 후처리 등) |
+| 같은 글의 한계 | 편집기가 켜져 있어야 하는 것이 기본. 창 없는 실행은 Build Server 라이선스(값 미공개), 리눅스 컨테이너는 "곧". 화면 찍기·콘솔 오류 읽기·조명 굽기를 CLI로 하는지는 글에 없음 [확인 필요] · 포럼: 성공이라고 했는데 실패하던 문제가 1.0에서 고쳐졌다고 함 | 시험 전엔 "Godot만큼 Claude 혼자 끝까지"인지 모름 |
+| dev.to (mistyhx, 2026-03, Godot 4.2로 스팀 게임 만드는 개발자) | Godot 씬 파일이 짧은 글자라 AI가 읽기 쉬움, 구조가 한 가지라 AI 코드가 덜 흩어짐. **단 3D·큰 프로젝트는 Unity가 더 강하다고 본인도 인정** | 방향은 맞으나 실험 숫자 없음 |
+| dev.to (Ziva, 2026, **AI 도구 판매사**) | "Unity 씬은 이진이라 AI가 못 읽음" — **틀림**(Unity는 글자 저장 설정이 있음). 판매 글이라 낮게 봄 | — |
+| dev.to (abagames, 2026-03) | Godot 처음인 사람이 AI로 2D 게임. 창 없이 빌드·시험 잘 됨. **글로 설명한 충돌 버그는 못 고치고, 화면 찍은 그림을 주니 한 번에 고침** · 시험을 통과해도 사람이 해 봐야 함 | 우리가 쓰는 "찍어서 확인" 고리가 핵심이라는 근거 |
+| dev.to (GodotIQ 판매자, 2026-03) | Claude Code + 자체 MCP로 3D 타워 디펜스. 그림은 Kenney 무료 팩, 조명·화질 얘기 없음 | 3D 코드는 되지만 **보이는 품질은 사람·자산 몫** |
+| Godot 4.7 (2026-06) | AreaLight3D(형광등 패널) · HDR 출력 · 셰이더 편집기 미리보기 | 현실 끝판(형광등 실내)에 맞음 |
+| Unity 6.3 LTS (2025-12) | Shader Graph에 URP **커스텀 조명**(툰 단계 직접) · GPU 라이트맵 굽기 기본 · Render Graph 기본 | 카툰 → 현실 섞기를 눈으로 보며 만들 수 있음 |
+| 엔진별 3D 공포 실례 | Godot: 스팀 3D 1인칭 공포 히트작은 찾지 못함(Godot 큰 히트는 Slay the Spire 2 등 2D). Unity: MiSide·Chilla's Art·Crow Country·Mouse P.I. | 우리 장르 실례는 Unity가 많음 |
+| 스카우트 보드 (`Scout/notes/topic-dorm-background-aaa.md`·`topic-dorm-paper-puppet.md`, 11-27) | Godot 함정: **LightmapGI를 Static으로 구우면 툰 `light()`가 안 돎 → Dynamic으로**(실험 필요) · 종이 카드는 LightmapProbe 더 놓기 · 에셋: Nimikko 기숙사·LIZI 학교 = Fab **Unreal 전용**(어느 엔진이든 꺼내야 함) · Midias 애니 아파트 = **Unity 전용** · Crow Country(Unity): "최종 후처리를 켠 채 모델링" | 카툰 → 현실 섞기에서 Godot 쪽에 실험할 함정이 하나 더 있음 |
+
+- 다시 본 판단(Claude): **거의 비김 → 시험으로 정하기가 더 맞아짐.** Godot = 가볍고 이미 "찍어서 확인" 고리가 돎. Unity = 이번 달 공식 AI 도구가 정식이 됐고, 이 장르 실례·자산·Shader Graph가 많음.
+- 시험안: 같은 "카툰 → 현실 복도 한 칸"을 ① Godot(지금 도구) ② Unity 6.3 + CLI 1.0(이 PC에 Hub 있음)으로. 비교 = 정지 화면 0/50/100% · Claude 혼자 된 비율(사용자가 클릭한 횟수) · 걸린 시간.
+- 출처: unity.com/the-unity-cli-1.0-is-here · discussions.unity.com(Unity CLI 발표 글, 7월~) · gaming.net(CLI 1.0) · docs.unity.com(Unity 6.3 LTS 새 기능) · cgchannel.com(Unity 6.3·Godot 4.7) · dev.to(mistyhx·ziva·abagames·salvo10f) · gamesradar.com(Slay the Spire 2·Godot 성장) · Scout 보드
