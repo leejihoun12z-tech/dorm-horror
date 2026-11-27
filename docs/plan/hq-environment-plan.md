@@ -54,3 +54,22 @@ _캐릭터는 종이인형극 빌보드 [확정 방향](tech-plan §5-5-5). 엔�
 
 ## 출처
 godotengine.org(4.6·4.7 출시 글, HDR 출력 글) · docs.godotengine.org(LightmapGI·SDFGI·볼류메트릭 안개·반사 프로브) · unity.com(2026 렌더 파이프라인 방침, 가격) · unrealengine.com(라이선스·FAQ) · shattered.io·godotlearning.com(엔진 비교, 2026) · Road to Vostok(Patreon 이식 글, PC Gamer, polycount) · top3d.ai(게임 엔진 속 가우시안 스플랫, 2026-05) · github.com/ReconWorldLab/godot-gaussian-splatting(gdgs 3.3) · deeplearning.ai(World Labs Atlas, 2026-11) · docs.spaitial.ai · xgrids.com(스캔 → 언리얼 게임 사례) · strayspark.studio(AI로 공포 맵 하루 제작) · latentnine.itch.io·cgarthr0.itch.io(AI 3D 소품 한계)
+
+## 6. Godot vs Unity 다시 저울질 (2026-11-28) [후보 — 사용자 결정 대기]
+_사용자: "godot이랑 유니티 다시 저울질해봐. godot 이해도가 있는 건 아니야, 완전 바이브코딩식이라 거의 없어."_
+_새 조건: 배경 룩 = 회차가 갈수록 카툰 → 현실(리미널 형광) 섞기(look-exploration §10) · 엔진은 사용자가 아니라 **Claude가 거의 다 다룸**._
+
+| 기준 | Godot 4.7 | Unity 6 (URP) | 이 게임에서 |
+|---|---|---|---|
+| Claude가 혼자 할 수 있는 범위 | 씬·스크립트가 글자 파일 → Claude가 직접 고치고, 창 없이 실행·화면 찍기까지 함(이 저장소에서 이미 씀) | 편집기가 켜져 있어야 함. 공식 MCP(2026-05 공개 베타, Unity 6+) · 커뮤니티 MCP로 조작 가능. 자산 들여오기·조명 굽기는 편집기 안에서 | **Godot 우세** — 사용자가 엔진을 모를수록 Claude가 끝까지 확인할 수 있는 쪽이 유리 |
+| 카툰 → 현실 섞기 | 셰이더를 코드로(Claude가 씀) · LightmapGI · AreaLight3D(형광등 패널) · 후처리 | Shader Graph(눈으로 보며 연결) · 적응형 프로브 볼륨 · 후처리 볼륨 · 툰 셰이더 생태계(UTS·lilToon 등, Unity 전용) | 둘 다 됨. 현실 끝판이 "평평한 형광등 실내"라 최고급 조명까지는 필요 없음. **Unity 조금 우세** |
+| 살 수 있는 자산 | 적음 | Asset Store 큼(셰이더·시스템·대화 도구) | 배경 메시는 Fab 등 엔진 무관 파일이 많음 · 캐릭터는 2D 종이인형이라 애니 3D 자산 이점은 작음. **Unity 우세(중간)** |
+| 비슷한 게임 | Road to Vostok(사실풍 FPS) | MiSide · Chilla's Art · Mouse P.I. · Fallen Aces(2D 인물 × 3D 공간) | 우리와 가장 닮은 사례는 Unity 쪽이 많음 — 가능하다는 증거일 뿐 필수는 아님 |
+| 비용 | 무료 | Personal 무료(최근 12개월 매출+투자 20만 달러 미만), 넘으면 Pro(2026-01부터 5% 인상) | 출시 초반엔 차이 없음 |
+| 옮기는 비용 | — | 지금 Godot 코드 = 플레이어·시험 복도·종이인형·셰이더·검사 도구 정도 → 지금이 가장 쌈 | 늦을수록 비싸짐 |
+| 이 PC | Godot 4.7.2 | Unity Hub + 6000.3 프로젝트(PotionWitch) 있음 → 새 설치 거의 없음 | 둘 다 시험 가능 |
+
+- Claude 판단: **조금 Godot** — 엔진을 사람이 아니라 Claude가 다루는 방식에서는 "글자 파일 + 창 없이 실행·찍기"가 가장 큰 차이. Unity의 장점(Shader Graph·Asset Store·편집기에서 손으로 배치)은 **사람이 편집기를 만질 때** 커짐.
+- 바뀌는 조건: 사용자가 편집기에서 직접 배치·조명을 만지고 싶다 / Asset Store 팩을 많이 사서 쓰겠다 / 유니티 편집기에 이미 익숙하다 → Unity.
+- 정하는 법(추천): **같은 "카툰 → 현실 복도 한 칸"을 두 엔진으로 하루씩** 만들어 정지 화면 품질 + 사용자가 손댄 양을 비교 → 고름.
+- 출처: unity.com/products/pricing-updates · unity.com/blog/unity-ai-mcp-how-to-get-started · docs.unity3d.com(com.unity.ai.assistant 2.0 Unity MCP) · 이 문서 §2
