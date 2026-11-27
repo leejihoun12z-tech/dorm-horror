@@ -185,7 +185,9 @@ def main() -> None:
 					for k in range(a.seeds):
 						jobs.append((sp, st, m, k))
 	guides = {}
-	for i, (sp, st, m, k) in enumerate(jobs):
+	# 8GB 그래픽카드에서 체크포인트를 자주 바꾸면 느려서, 같은 체크포인트끼리 묶어 보낸다(시드는 원래 순번 그대로).
+	order = sorted(enumerate(jobs), key=lambda t: t[1][1].get("ckpt", "base"))
+	for i, (sp, st, m, k) in order:
 		if sp not in guides:
 			guides[sp] = (f"dorm_look_guides/{sp}_depth.png", f"dorm_look_guides/{sp}_lines.png") if a.dry_run else (upload(a.server, GUIDES / f"{sp}_depth.png"), upload(a.server, GUIDES / f"{sp}_lines.png"))
 		wf = workflow(cfg, sp, st, m, guides[sp][0], guides[sp][1], a.seed + i * 7919 + k, a.cn, k)
