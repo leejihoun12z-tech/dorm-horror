@@ -2,6 +2,7 @@ extends SceneTree
 ## 데포르메 배경 스타일 후보 비교 (env-style-direction §10): 같은 기숙사 복도를 극사실 1 + 데포르메 6가지로, 낮, 종이인형 카드와 함께 찍는다.
 ##   godot --path . --rendering-driver vulkan --rendering-method forward_plus --resolution 1280x720 \
 ##         -s res://tools/dev/deform_styles.gd -- --dir=절대경로 [--style=real|mini|clay|paper|toy|anime|paint]
+## 조명 분위기 비교(vibe-board §8): --moods [--mood=이름] → 같은 모양(기본 real)에 조명만 바꿔 light_<이름>_a/b.png
 ## 극사실은 얇고 반듯한 모양 + 사진 재질. 데포르메 6가지는 같은 "과장된 모양"(두꺼운 벽·둥근 모서리·큰 문과 손잡이·기운 벽)에
 ## 겉만 다르게 입힌다. 재질 사진은 .screenshots/style3/tex/ (Poly Haven CC0, git 제외), 나머지 무늬는 코드로 만든다.
 
@@ -38,6 +39,12 @@ var st: String = ""
 var rng := RandomNumberGenerator.new()
 var tex_cache: Dictionary = {}
 var gen: Dictionary = {}  # 코드로 만든 무늬
+var moods_mode: bool = false
+var only_mood: String = ""
+var mood: String = ""
+var lamp_slots: Array = []  # [재질, 위치]
+var win_mat: StandardMaterial3D
+const MOODS: Array[String] = ["base", "dusk", "mono_red", "duo", "liminal", "stage", "moon_blinds", "alarm", "uv", "pools"]
 
 func _init() -> void:
 	for a: String in OS.get_cmdline_user_args():
@@ -45,11 +52,18 @@ func _init() -> void:
 			dir = a.substr(6)
 		elif a.begins_with("--style="):
 			only_style = a.substr(8)
+		elif a == "--moods":
+			moods_mode = true
+		elif a.begins_with("--mood="):
+			only_mood = a.substr(7)
 	DirAccess.make_dir_recursive_absolute(dir)
 	_make_gen_textures()
 	_run()
 
 func _run() -> void:
+	if moods_mode:
+		await _run_moods()
+		return
 	for s: String in ORDER:
 		if only_style != "" and s != only_style:
 			continue
@@ -61,6 +75,23 @@ func _run() -> void:
 		for i: int in range(25):
 			await process_frame
 		await _shot("%s_b" % s)
+	quit()
+
+func _run_moods() -> void:
+	for m: String in MOODS:
+		if only_mood != "" and m != only_mood:
+			continue
+		mood = m
+		await _build(only_style if only_style != "" else "real")
+		if m != "base":
+			_apply_mood()
+		for i: int in range(45):
+			await process_frame
+		await _shot("light_%s_a" % m)
+		cam.look_at_from_position(Vector3(-0.55, 1.6, -3.4), Vector3(0.6, 1.15, -6.6), Vector3.UP)
+		for i: int in range(25):
+			await process_frame
+		await _shot("light_%s_b" % m)
 	quit()
 
 func _shot(n: String) -> void:
@@ -358,6 +389,7 @@ func _build(s: String) -> void:
 	_box(Vector3(S.w, H, t), Vector3(0, H * 0.5, 0.8), mats.wall, 0.0)
 	_box(Vector3(S.w, H, t), Vector3(0, H * 0.5, -LEN - t * 0.5), mats.wall, 0.0)
 	var win := StandardMaterial3D.new()
+	win_mat = win
 	win.albedo_color = Color(0.6, 0.78, 0.98)
 	win.emission_enabled = true
 	win.emission = win.albedo_color
@@ -404,6 +436,7 @@ func _lamps() -> void:
 	var lz: float = -1.5
 	var k: int = 0
 	var mood: bool = st == "mini"
+	lamp_slots.clear()
 	while lz > -LEN + 0.5:
 		var on: bool = not mood or k == 1 or k == 3
 		var lamp := StandardMaterial3D.new()
@@ -414,6 +447,7 @@ func _lamps() -> void:
 			lamp.emission_energy_multiplier = 4.0
 		var lh: float = 0.06 if st == "real" else 0.16
 		_box(Vector3(0.6, lh, 1.2) * Vector3(1, 1, 1) * (1.0 if st == "real" else 1.15), Vector3(0, H - lh * 0.5, lz), lamp, 0.0 if st == "real" else 0.07)
+		lamp_slots.append([lamp, Vector3(0, H - lh - 0.01, lz)])
 		if on:
 			var al := AreaLight3D.new()
 			al.area_size = Vector2(0.6, 1.2)
@@ -539,3 +573,159 @@ func _shoes(at: Vector3) -> void:
 	for j: int in range(4):  # 신발 두 켤레, 앞코가 복도 쪽
 		var zz: float = (-0.25 + j * 0.13 + (0.12 if j >= 2 else 0.0)) * p
 		_box(Vector3(0.26, 0.08, 0.1) * p, at + Vector3(-0.36 * p, 0.04 * p, zz), cols[j], minf(S.bevel, 0.035), Vector3(0, 6.0 * (j % 2) - 3.0, 0))
+
+# ---------------------------------------------------------------- 조명 분위기 (vibe-board §8)
+func _apply_mood() -> void:
+	for n: Node in root3d.get_children():
+		if n is Light3D or n is WorldEnvironment:
+			root3d.remove_child(n)
+			n.free()
+	for sl: Array in lamp_slots:
+		_lamp(sl, Color.BLACK, 0.0, 0.0)
+	var env := Environment.new()
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0, 0, 0)
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.tonemap_mode = Environment.TONE_MAPPER_AGX
+	env.sdfgi_enabled = true
+	env.sdfgi_use_occlusion = true
+	env.ssao_enabled = true
+	env.ssao_intensity = 2.0
+	env.glow_enabled = true
+	env.glow_intensity = 0.8
+	env.adjustment_enabled = true
+	env.volumetric_fog_enabled = true
+	env.volumetric_fog_density = 0.02
+	var H: float = S.h
+	var hw: float = S.w * 0.5
+	var puppet := Vector3(0.35, 1.0, -6.2)
+	match mood:
+		"dusk":  # 노을 역광: 끝 창에서 낮은 해가 복도를 가로지름
+			win_mat.emission = Color(1.0, 0.55, 0.25)
+			win_mat.emission_energy_multiplier = 7.0
+			_spot(Vector3(0, 1.55, -LEN + 0.3), Vector3(0, 0.5, -1.0), Color(1.0, 0.55, 0.25), 14.0, 32.0, 22.0, null, 2.5)
+			_amb(env, Color(0.4, 0.32, 0.6), 0.12, 0.03, Color(1.0, 0.8, 0.6))
+			env.glow_intensity = 1.1
+		"mono_red":  # 한 색: 전부 빨강
+			for sl: Array in lamp_slots:
+				_lamp(sl, Color(1.0, 0.08, 0.06), 3.0, 2.2)
+			_amb(env, Color(0.6, 0.05, 0.05), 0.05, 0.015, Color(1.0, 0.3, 0.3))
+			env.adjustment_saturation = 1.3
+			env.adjustment_contrast = 1.2
+		"duo":  # 보색 두 색: 청록·자홍 번갈아
+			for i: int in lamp_slots.size():
+				_lamp(lamp_slots[i], Color(0.1, 0.95, 0.9) if i % 2 == 0 else Color(1.0, 0.15, 0.65), 3.0, 2.4)
+			_amb(env, Color(0.2, 0.12, 0.3), 0.08, 0.018, Color(0.9, 0.9, 1.0))
+			env.adjustment_saturation = 1.2
+		"liminal":  # 리미널 형광: 과하게 밝고 연두빛, 흐릿
+			for i: int in lamp_slots.size():
+				if i != 2:  # 하나는 꺼짐
+					_lamp(lamp_slots[i], Color(0.82, 1.0, 0.68), 4.5, 3.6)
+			_amb(env, Color(0.8, 0.95, 0.7), 0.7, 0.025, Color(0.95, 1.0, 0.9))
+			env.tonemap_exposure = 1.45
+			env.glow_intensity = 1.6
+			env.glow_bloom = 0.3
+			env.adjustment_saturation = 0.6
+			env.adjustment_contrast = 0.8
+		"stage":  # 무대 조명: 위에서 핀 조명 + 바닥 쪽 빛이 인형 그림자를 크게
+			_spot(Vector3(0.35, H - 0.05, -4.9), puppet, Color(1.0, 0.9, 0.75), 6.0, 16.0, 8.0, null, 1.5)
+			_spot(Vector3(0.28, 0.25, -4.3), Vector3(0.35, 1.5, -10.0), Color(1.0, 0.72, 0.45), 4.5, 38.0, 16.0, null, 0.6)
+			_amb(env, Color(0.2, 0.2, 0.35), 0.015, 0.02, Color(1, 0.9, 0.8))
+		"moon_blinds":  # 달빛 + 블라인드 줄무늬
+			win_mat.emission = Color(0.4, 0.55, 1.0)
+			win_mat.emission_energy_multiplier = 1.5
+			_spot(Vector3(-hw + 0.2, H - 0.15, -5.0), Vector3(hw, 0.4, -7.2), Color(0.55, 0.7, 1.0), 16.0, 42.0, 10.0, _blinds_tex(), 1.8)
+			_amb(env, Color(0.2, 0.3, 0.6), 0.05, 0.025, Color(0.6, 0.7, 1.0))
+		"alarm":  # 비상등: 빨간 경광등 + 초록 비상구
+			_spot(Vector3(0, H - 0.25, -4.3), Vector3(-hw, 1.0, -6.5), Color(1.0, 0.05, 0.03), 18.0, 26.0, 9.0, null, 2.0)
+			_omni(Vector3(0, H - 0.25, -4.3), Color(1.0, 0.1, 0.05), 1.5, 4.0)
+			_omni(Vector3(0, H - 0.35, -LEN + 0.5), Color(0.1, 1.0, 0.35), 2.5, 6.0)
+			_amb(env, Color(0.3, 0.05, 0.05), 0.04, 0.02, Color(1, 0.8, 0.8))
+		"uv":  # 블랙라이트: 보라빛에서만 보이는 낙서
+			_spot(Vector3(0.2, 1.45, -0.7), puppet, Color(0.45, 0.15, 1.0), 9.0, 30.0, 14.0, null, 1.5)
+			_amb(env, Color(0.18, 0.06, 0.35), 0.08, 0.015, Color(0.6, 0.4, 1.0))
+			_uv_text("돌아가", Vector3(-hw + 0.02, 1.7, -4.2), 90.0, 0.006)
+			_uv_text("7번 수칙은 거짓", Vector3(hw - 0.02, 1.9, -9.0), -90.0, 0.004)
+			_uv_text("→ → →", Vector3(-hw + 0.02, 0.9, -8.0), 90.0, 0.005)
+			_uv_text("여기 있어", Vector3(0.0, 0.02, -3.2), 0.0, 0.006, true)
+		"pools":  # 빛 웅덩이: 형광등 몇 개만 켜져 안개 속 빛기둥
+			for i: int in lamp_slots.size():
+				if i % 2 == 0:
+					_lamp(lamp_slots[i], Color(1.0, 0.82, 0.6), 3.0, 0.0)
+					var pos: Vector3 = lamp_slots[i][1]
+					_spot(pos, pos + Vector3(0, -3.0, 0.01), Color(1.0, 0.8, 0.55), 12.0, 34.0, 6.0, null, 2.5)
+			_amb(env, Color(0.3, 0.3, 0.4), 0.01, 0.045, Color(0.9, 0.85, 0.8))
+	var we := WorldEnvironment.new()
+	we.environment = env
+	root3d.add_child(we)
+
+func _amb(env: Environment, c: Color, e: float, fog: float, fog_col: Color) -> void:
+	env.ambient_light_color = c
+	env.ambient_light_energy = e
+	env.volumetric_fog_density = fog
+	env.volumetric_fog_albedo = fog_col
+
+func _lamp(sl: Array, c: Color, emit: float, light: float) -> void:
+	var m: StandardMaterial3D = sl[0]
+	m.emission_enabled = emit > 0.0
+	m.emission = c
+	m.emission_energy_multiplier = emit
+	m.albedo_color = Color(0.25, 0.25, 0.24) if emit <= 0.0 else Color(1, 1, 1)
+	if light > 0.0:
+		var al := AreaLight3D.new()
+		al.area_size = Vector2(0.6, 1.2)
+		al.area_range = 8.0
+		al.light_energy = light
+		al.light_color = c
+		al.shadow_enabled = true
+		al.position = sl[1]
+		al.rotation_degrees = Vector3(-90, 0, 0)
+		root3d.add_child(al)
+
+func _spot(pos: Vector3, target: Vector3, c: Color, energy: float, angle: float, rng_m: float, proj: Texture2D, fog_e: float) -> SpotLight3D:
+	var sp := SpotLight3D.new()
+	sp.light_color = c
+	sp.light_energy = energy
+	sp.spot_angle = angle
+	sp.spot_range = rng_m
+	sp.shadow_enabled = true
+	sp.light_volumetric_fog_energy = fog_e
+	if proj != null:
+		sp.light_projector = proj
+	root3d.add_child(sp)
+	sp.look_at_from_position(pos, target, Vector3.UP if absf((target - pos).normalized().y) < 0.95 else Vector3.FORWARD)
+	return sp
+
+func _omni(pos: Vector3, c: Color, energy: float, r: float) -> void:
+	var o := OmniLight3D.new()
+	o.position = pos
+	o.light_color = c
+	o.light_energy = energy
+	o.omni_range = r
+	root3d.add_child(o)
+
+func _blinds_tex() -> Texture2D:
+	var img := Image.create(256, 256, false, Image.FORMAT_RGBA8)
+	for y: int in range(256):
+		for x: int in range(256):
+			var on: bool = (y % 32) < 20 and not (x > 122 and x < 134)
+			var edge: float = clampf(1.0 - Vector2(x - 128, y - 128).length() / 128.0, 0.0, 1.0)
+			var v: float = (1.0 if on else 0.0) * minf(1.0, edge * 2.5)
+			img.set_pixel(x, y, Color(v, v, v))
+	return _img_tex(img)
+
+func _uv_text(t: String, pos: Vector3, yaw: float, px: float, floor_text: bool = false) -> void:
+	var l := Label3D.new()
+	l.text = t
+	var f := SystemFont.new()
+	f.font_names = PackedStringArray(["Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Unifont"])
+	l.font = f
+	l.font_size = 64
+	l.pixel_size = px
+	l.shaded = false
+	l.double_sided = true
+	l.modulate = Color(0.55, 2.2, 0.5)
+	l.outline_size = 0
+	l.position = pos
+	l.rotation_degrees = Vector3(-90 if floor_text else 0, yaw, 0)
+	root3d.add_child(l)
