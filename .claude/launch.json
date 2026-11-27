@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "look-viewer",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8765", "--bind", "127.0.0.1", "--directory", "C:/Users/leeji/Desktop/ComfyUI_windows_portable/ComfyUI/output/dorm_look_states"],
+      "port": 8765
+    }
+  ]
+}

@@ -5,7 +5,7 @@
     "anime": "animagine-xl-4.0-opt.safetensors"
   },
   "controlnet": "controlnet-union-sdxl-1.0-promax.safetensors",
-  "negative": "people, person, human, girl, boy, character, text, watermark, signature, logo, frame, border, deformed, distorted perspective",
+  "negative": "people, person, human, girl, boy, character, text, watermark, signature, logo, frame, border, deformed, distorted perspective, blood, gore, blood splatter, wounds",
   "night_suffix": ", at night, lights off, only moonlight through the window and a faint emergency light, very dark, deep shadows",
   "spaces": {
     "corridor": "interior of a Korean university women's dormitory hallway, long corridor, numbered room doors on both sides, small shoe cabinets beside the doors, red fire hydrant box on the wall, bulletin board with paper notices, ceiling fluorescent lights, double fire door with an exit sign at the far end, terrazzo floor, empty",
@@ -349,5 +349,46 @@
     "stairs": "dormitory stairwell, U-shaped concrete stairs, metal handrail, landing window, fire door, empty",
     "laundry": "dormitory laundry room, row of washing machines and dryers, folding table, laundry basket, drying rack, empty",
     "lounge": "dormitory lounge, sofa and low table, TV, two glowing vending machines, round tables and chairs, bookshelf, large window, empty"
-  }
+  },
+  "states": [
+    {
+      "id": "D1_day",
+      "name": "낮 — 밝고 따뜻한 미연시",
+      "prompt": "bright warm afternoon, soft golden sunlight streaming through the window, cozy and inviting, warm pleasant colors, peaceful slice of life, visual novel background",
+      "denoise": 1.0
+    },
+    {
+      "id": "D2_late",
+      "name": "후반 낮 — 같은 빛인데 기시감",
+      "prompt": "the same daytime room but subtly wrong, stale flat daylight, slightly desaturated faded colors, too quiet and too still, uneasy deja vu, unsettling atmosphere, faint haze",
+      "denoise": 0.45,
+      "grade": {
+        "bright": 0.95,
+        "sat": 0.55,
+        "tint": [
+          0.97,
+          1.02,
+          0.98
+        ],
+        "contrast": 0.85
+      }
+    },
+    {
+      "id": "N1_night",
+      "name": "밤 — 같은 배경, 공포",
+      "prompt": "at night, room lights off, only cold blue moonlight through the window and a faint red glow, deep black shadows, eerie silent horror atmosphere",
+      "denoise": 0.6,
+      "grade": {
+        "bright": 0.28,
+        "sat": 0.35,
+        "tint": [
+          0.75,
+          0.9,
+          1.25
+        ],
+        "contrast": 1.1
+      }
+    }
+  ],
+  "_states_설명": "상태 3단계(run_comfy_states.py): D1 낮을 먼저 뽑고, D2·N1은 그 낮 그림의 색·밝기를 grade로 먼저 바꾼 뒤 img2img(denoise)로 다시 그려 같은 배경을 유지한다."
 }
