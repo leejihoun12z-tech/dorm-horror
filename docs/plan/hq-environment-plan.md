@@ -109,3 +109,11 @@ _새 조건: 배경 룩 = 회차가 갈수록 카툰 → 현실(리미널 형광
 - 판단(Claude): 고점이 우선이면 **Godot는 뒤로**(현실 끝판의 상한이 가장 낮음). **Unreal = 고점 최고 · 무료 Megascans와 가장 잘 맞음 · 대신 무겁고 Claude 조작이 덜 매끄러움. Unity = 그 사이, AI 도구는 공식.**
 - 시험안(추천): 같은 "카툰 → 현실 복도 한 칸"을 **Unreal과 Unity로**(Godot는 지금 판이 이미 있으니 비교용 기준) → 현실도 0/50/100% 정지 화면 · fps(8GB) · Claude 혼자 된 비율. 설치는 사용자 승인 뒤.
 - 출처: cgchannel.com/2026/11/epic-has-made-megascans-free-again-for-good-this-time · creativebloq.com(Megascans 무료) · dev.epicgames.com(Fab 사용권) · pypi.org(unrealmcp·unreal-engine-mcp, 5.7·5.8) · wccftech.com(The Outer Worlds 2 성능) · forums.unrealengine.com(UE5 VRAM)
+
+### 6-3. Claude가 Unreal을 얼마나 다루나 (2026-11-28, 사용자 질문) [후보]
+- **Unreal 5.8(2026-06)부터 공식 MCP(실험 단계)** — 편집기 안에 서버가 있고 기본 클라이언트가 Claude Code. 액터 배치·블루프린트·재질·Niagara·Sequencer·PCG·장면 캡처(화면 찍기)·콘솔·Python 도구 묶음. 편집기 "Unreal Assistant" 패널에서 Claude Code를 바로 돌림. 한계(Epic 문서): 실험 기능이라 API가 바뀔 수 있음 · 도구 호출이 하나씩 · 약 120초 넘으면 끊김.
+- 실사용 후기: Puget Systems(2026-07, Claude) — 방 6개 회색 복도 약 5분, 불 켜고 끄는 블루프린트 됨 / 조작 바꾸기 실패, PCG 도시는 못 만들고 손으로 배치 · **한 번 요청에 5~15분 이상, 토큰 많이 씀** · 조명·재질은 시험 안 함. daily.dev(2026-06) 블루프린트 5개 — 쉬운 것 8~9/10, 트리거 로직 4/10, 떠 있는 물체·충돌 빠짐 등 사람이 고침. 블루프린트가 엉킨 실타래가 되기 쉬움.
+- 정리: 배치·재질·간단한 로직 = 됨 · 복잡한 로직 = C++로 시키면 나음(글자 파일, Claude가 강함. 이 PC에 VS 2022 C++ 도구 있음) · **화면 마무리(빛 구도·재질 손질)는 어느 엔진이든 사람 눈이 필요**.
+- **Unity보다 나은 점**: ① 화질 상한 ② **Lumen 실시간 간접광 → 카툰→현실·낮→밤을 굽기 없이 바로 바꿈**(Unity·Godot는 상태마다 라이트맵을 따로 구워야 해서 섞는 단계가 늘수록 일이 늘어남) ③ 손전등 빛이 벽에 튀어 방을 밝힘(공포에 큼) ④ 무료 Megascans·Fab이 바로 들어감 ⑤ 영상·스크린샷 뽑기(Movie Render Queue)로 홍보 그림 질 ⑥ 매출 100만 달러까지 무료.
+- **Unity가 나은 점**: 가벼움(8GB·플레이어 PC 사양) · 코드 고치고 확인이 빠름(C# 몇 초 vs C++ 빌드 수십 초~분) · AI 도구가 정식(CLI 1.x 호환 약속) vs Unreal MCP 실험 · 툰 자료가 많음.
+- 출처: dev.epicgames.com(Unreal MCP in Unreal Editor) · pugetsystems.com(2026-07-09 hands-on) · daily.dev(UE 5.8 Claude 시험, 엔드리스 러너) · engadget.com · thenextweb.com(UE6 AI) · ludusengine.com(판매사)
