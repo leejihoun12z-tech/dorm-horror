@@ -11,7 +11,7 @@ _마지막 갱신: 2026-11-27 · **새 채팅은 PC Claude Code에서 시작 —
 - ~~캐릭터 만드는 법 [후보]: "Family Time 느낌"~~ [폐기·대체 → 종이인형극 빌보드 §5-5-5] — 로우폴리 몸 + 그린 얼굴 텍스처(표정 = 얼굴 그림 바꾸기) + 텍스처에 그려 넣은 선 + 캐릭터당 2~3색 + 옅은 툰(밤 손전등이 먹게). 방법만 가져오고 디자인은 우리 것 (tech-plan §5-4)
 
 ## 다음 할 일
-0-1. **엔진 고르기(사용자)**: Unity·Unreal 복도 비교 `docs/plan/img/engine_test_20261128/unity_vs_unreal.jpg` (engine-test-corridor §5-3) — 추천 = 두 엔진에서 한 번씩 걸어 보기(fps 재기 포함) 뒤 결정
+0-1. **엔진 고르기(사용자)**: Unity·Unreal 복도 비교 `docs/plan/img/engine_test_20261128/unity_vs_unreal.jpg` (engine-test-corridor §5-3) — **걸어 보기 준비 끝** — PC `Projects/dorm-engine-test/walk_unity.bat` · `walk_unreal.bat`(키·fps §5-4) → 사용자가 걸어 보고 엔진 결정
 0. **배경 룩 방향(사용자)**: 회차 축 카툰 → 현실(look-exploration §10) — 카툰 시작 S49/S06 고르기 · 만드는 방식 A/B/C(추천 B+C) · 현실 끝판의 결 → 정해지면 복도 한 칸을 Godot에서 카툰 재질·현실 재질 두 벌로 시험
 1. **회색 상자 판** (tech-plan §4): 하루 흐름(아침 사감실 업무 → 낮 수리·민원 → 점호 → 심야 순찰 → 일지·회귀)을 그림 없이 돌아가게
 2. **(종이인형 방향으로 중단 후보 — 사용자 확인)** 3D 캐릭터 1명 시험(마네킹) → **모델링 방식 다시(사용자 11-26)**: R27_2 → 데포르메 5.5등신 전신 그림(ChatGPT, 정면+뒷모습) → 3D 모양(TripoSG 로컬 + Tripo 웹 비교) → 단색 다시 칠하기·관절별 자르기 → Godot (`char3d-test-01-mannequin.md` §7-1, 조사 `char3d-method-research-20261126.md`). 사용자 시작 확인·설치 승인 대기. Blender 스크립트 부품(§6)은 [폐기·대체] · 예전 메모 = 얼굴 표정 그림(아트 채팅 ComfyUI) · 가발·베레모·트렌치 로우폴리(PC Blender) — `docs/plan/char3d-test-01-mannequin.md` §4. 원래 계획: "Family Time 느낌" 방법(tech-plan §5-4)으로 기숙생 1명: 로우폴리 몸(Blender 또는 Tripo 로우폴리) + 그린 얼굴 텍스처 → 시험 복도에 세움 → 낮·밤 손전등 정지 화면 · 표정 3개 · 걷기 10초. PC 필요(`docs/pc-setup.md`)
@@ -22,6 +22,7 @@ _마지막 갱신: 2026-11-27 · **새 채팅은 PC Claude Code에서 시작 —
 7. 사용자 결정 대기: 건물 이름 · 메인 기숙생 고르기 · 게임 길이 · 가제 · 밤 방식(어두운 빛 / 거친 저해상도) · 정확한 등신(작업값 5.5)
 
 ## 최근 완료
+- 2026-11-28: **두 엔진 걸어 보기 준비** — Unity 실행 파일(1인칭·현실도 1~5·N 밤·F 손전등·fps 표시, 약 350~480 fps) · Unreal은 엔진 1인칭 템플릿 + 편집기 플레이(120 fps 상한) · 둘 다 Claude가 스스로 찍어 확인 · 실행 `dorm-engine-test/walk_*.bat` (engine-test-corridor §5-4)
 - 2026-11-28: **엔진 시험 Unreal 끝 · 두 엔진 비교** — Unreal 5.8.4 Lumen + 후처리 카툰으로 같은 21장, 편집기 클릭 0번, 약 26분(오류 6번 고침) · 정지 화면 고점은 Unreal 조금 우세(현실 깊이감·외곽선), Claude 다루기는 비슷 · fps 미측정 (engine-test-corridor §5-2·5-3)
 - 2026-11-28: **엔진 시험 Unity 끝** — 카툰↔현실 셰이더·복도 자동 짓기·21장 자동 촬영, 설치 뒤 편집기 클릭 0번 · 카툰 점광원 동심원은 고칠 것 · CC0 자산 616개(재질 244·모델 66·하늘 12, 5.4GB) `dorm-engine-test/free_assets` · Unreal 5.8.4 설치 중 (engine-test-corridor §5-1)
 - 2026-11-28: **엔진 시험 준비** (사용자: Unreal·Unity 둘 다) — Unity CLI 1.1 설치 · 시험 설계 `docs/plan/engine-test-corridor.md` · Unity 편집기는 관리자 권한 창 때문에 Claude 설치 실패 → 사용자 설치 대기 · Unreal 런처·로그인 사용자 대기
@@ -31,7 +32,6 @@ _마지막 갱신: 2026-11-27 · **새 채팅은 PC Claude Code에서 시작 —
 - 2026-11-28: **룩 3차 — 회차가 갈수록 카툰 → 현실** (사용자 생각) — S49 서브컬처 카툰/S06 애니 배경 → 25·50·75% → 현실(리미널 형광 사진) + 밤 2장 · 조각씩 현실화 합성 · 방식 A 두 벌 / B 재질 섞기 / C 조각씩 비교, 추천 B+C · `img/look_realism_20261128/` (look-exploration §10) · 사용자 결정 대기
 - 2026-11-28: **룩 2차 — 같은 배경 낮→후반 낮→밤** (사용자 기준: 낮 따뜻한 미연시 · 후반 일차 기시감 · 밤 공포, 네온 폐기) — 낮 그림을 보정 후 img2img로 같은 방 유지 · 9화풍 × 3곳 × 3단계 81장 · 가장 맞음 S48/S06 애니 배경, 다음 S15 무대·S07 유화·S03 인형의 집 · 피처럼 보이는 자국 2장 → negative 추가 · `img/look_states_20261128/` · 크게 보기 `tools/look/make_viewer.py` (look-exploration §9)
 - 2026-11-28: **룩 1차 추림(Claude)** — 먼저 볼 것 S04 연필·S20 수채 그림책·S48/S06 애니 배경·S09 흑백+빨강, 다음 S18 도면·S28 벡터·S24 색 목판화·S02 리미널·S26 네온 · `img/look_20261127/picks_round1.jpg` · 사용자 고르기 대기 (look-exploration §8)
-- 2026-11-28: **룩 탐색 1차 220장(PC ComfyUI)** — 보기 5곳 × 화풍 44, 구도는 모두 맞음 · 또렷한 화풍 약 16개, 재질형(종이·점토·펠트·인형의 집)은 약함 · 비교표 `docs/plan/img/look_20261127/` · 사용자 고르기 대기 (`look-exploration-20261127.md` §7)
 
 ## 막힌 것 / 확인 필요
 - 구미호로 만든 3D 시험 대역(툰 셰이더·표정 바꾸기 층·시험 장면)은 마네킹 [확정]과 겹쳐 main에 안 넣음 → 브랜치 `char3d-kumiho-placeholder`에 보관(2026-11-26).

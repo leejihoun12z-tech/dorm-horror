@@ -59,3 +59,12 @@ _작성 2026-11-28 · 사용자: "Unreal·Unity 둘 다" (hq-environment-plan §
 - 색감 차이(Unity 주황·Unreal 회색)는 엔진 차이가 아니라 이번에 넣은 빛 색·채도 값 차이. 두 엔진 다 값만 바꾸면 맞출 수 있음.
 - **판단 [작업값]**: 정지 화면 고점은 Unreal 조금 우세(현실 쪽 깊이감·외곽선), Claude가 다루는 난도는 비슷(둘 다 편집기 손 안 댐). 남은 차이는 실제 걸어 다닐 때 느낌·fps·빌드 크기 → 사용자가 한 번 걸어 보고 정하는 게 맞음.
 - 아직 안 한 것: fps 재기 · 현실도 0→100 10초 영상 · 종이인형 카드 세우기 · Godot 기준판.
+
+### 5-4. 걸어 보기 (2026-11-28) — `img/engine_test_20261128/unity_walk.jpg` · `ue_walk.jpg`
+- 여는 법(PC `Projects/dorm-engine-test/`): **`walk_unity.bat`** = Unity 실행 파일(창 1600×900) · **`walk_unreal.bat`** = Unreal 편집기가 열리고 복도에서 플레이가 자동 시작(편집기 화면 안, 화면을 한 번 클릭해야 마우스가 잡힘).
+- 키(두 엔진 같게): WASD 이동 · 마우스 시선 · Space 점프 · 1~5 현실도 0/25/50/75/100%(천천히 바뀜) · Z/X 조금씩 · N 밤 · F 손전등 · Esc 끝(Unreal은 플레이 끝). Shift 숙이기는 Unity만(Unreal은 엔진 기본 1인칭 템플릿 캐릭터를 써서 없음).
+- Unity: 1인칭 스크립트 `DormWalker`(새 Input System) · 장면 `Walk.unity` · 실행 파일 191MB(빌드 2분 반, 다시 빌드 15~40초). `-autotest`로 실행하면 스스로 낮·현실·밤을 찍고 끝남.
+- Unreal: 엔진에 들어 있는 1인칭 템플릿(BP_FirstPersonCharacter·입력·팔 모델)을 복사해 씀 · 키는 `DebugExecBindings` → 편집기 Python `Scripts/dorm_live.py` 호출(개발용 방식, 실제 게임에선 블루프린트나 C++로 바꿔야 함).
+- fps(1600×900 근처, RTX 5060): Unity 실행 파일 **약 350~480 fps** · Unreal 편집기 플레이 **120 fps에서 막힘**(편집기 상한, 현실도 0·100 모두 120 유지 → 실제는 그 이상). 공정한 Unreal 수치는 패키징 빌드를 해야 나옴.
+- 고친 것: Unity 손전등이 11m 복도에 약함(세기 6 → 25) · Unreal 손전등이 저장된 낮 상태에서 "숨김"이라 세기만 올려선 안 켜짐(보이기도 같이 켬).
+- 남은 것: **사용자가 직접 걸어 보기**(조작감·무서움은 사람만 판단) · Unreal 숙이기 · Unreal 패키징 빌드 fps.
