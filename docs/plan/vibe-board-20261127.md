@@ -101,3 +101,15 @@ _작성 2026-11-27 · 사용자: "인형의 집은 확정 아님. 바이럴 될 
 - 관찰(Claude, 정지 화면): 같은 복도인데 조명만으로 전혀 다른 게임처럼 보임. L5·L6·L1은 그림자 모양이 화면을 만들고, L2·L3·L7은 색이 화면을 만든다. 종이인형 카드는 L1(실루엣)·L5(그림자극)에서 특히 "종이"답게 보임.
 - 조명은 배경 콘셉트(§1)와 따로 고를 수 있다. 한 가지로 고정하지 않고 **시간대·사건·회귀 단계마다 바꾸는 것**도 가능(예: 낮 L1 → 순찰 L6 → 사건 L7 → 규칙 위반 L2).
 - 한계: 회색 상자 수준 복도·소품이라 "분위기 방향"만 볼 것. 실제 품질은 PC에서 라이트맵 굽기·소품 밀도로.
+
+## 9. 참고 보드 2차 — 게임 61개 더 (2026-11-27, 사용자: "이런 거 더 찾아봐. 지금 저 복도에 적용하지 마, 저걸로는 차이를 못 느끼겠어")
+- **우리 회색 상자 복도에 스타일·조명을 입혀 보는 시안은 멈춤**(§10 데포르메·§8 조명 렌더는 참고로만 남김). 감을 잡을 때까지는 **실제 게임 화면**으로 비교한다.
+- 보드 7장(스팀 스크린샷, 남의 그림이라 저장소 제외·채팅으로만):
+  - G 연극·무대·디오라마 공간 — Kentucky Route Zero · Edith Finch · Creaks · OCTOPATH II · Blue Prince · Botany Manor · OXENFREE · Don't Starve
+  - H 그림·화풍이 3D 배경 — Disco Elysium · Sable · Chants of Sennaar · Firewatch · Okami · killer7 · SEASON · TUNIC · SCHiM · Hauntii · Manifold Garden · Paradise Killer
+  - I 2D 그림·종이·동화 — GRIS · Gorogoa · Children of Silentown · Fran Bow · Little Misfortune · Cuphead · Return to Monkey Island · Thank Goodness You're Here · Paper Trail · Lost in Random
+  - J 기괴·초현실·리미널 — CONTROL · Layers of Fear · Observer · SILENT HILL f · Still Wakes the Deep · INDIKA · COCOON · DARQ · Arctic Eggs · Buckshot Roulette · Cruelty Squad · Scorn
+  - K 2D 인물 × 3D·사진 공간 — Danganronpa · Higurashi(실제 사진 배경) · AI: The Somnium Files · Neon White · The Plucky Squire · Bug Fables · Sucker for Love · Before Your Eyes
+  - L 빛·그림자·색 — INSIDE · Hellblade · Ghostwire: Tokyo · SILENT HILL f · The Medium(두 세계 분할) · Yomawari · Layers of Fear · Still Wakes the Deep · Firewatch · Botany Manor
+  - M 공포 미연시·루프·조작 — Raging Loop(루프 + 마을 규칙) · Fata Morgana · Who's Lila? · Sucker for Love · Higurashi · Before Your Eyes · Blue Prince
+- 1차 보드(A~F) 28개 + 2차 61개 = 89개 게임. 사용자가 "이 게임 이 장면" 식으로 골라 주면, 그 공통점을 뽑아 우리 방향 후보로 정리한다.
