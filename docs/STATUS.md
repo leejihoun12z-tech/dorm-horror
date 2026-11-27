@@ -18,6 +18,7 @@ _마지막 갱신: 2026-11-27_
 5. 사용자 결정 대기: 건물 이름 · 메인 기숙생 고르기 · 게임 길이 · 가제 · 밤 방식(어두운 빛 / 거친 저해상도) · 정확한 등신(작업값 5.5)
 
 ## 최근 완료
+- 2026-11-27: **2.5D 합성 2차** — 전신 일러스트 6명(cast_v3) + 데포르메 게임 배경 4(Banban·Hello Neighbor 2·Little Nightmares II·Bendy)·실사 배경 4(Room 404·실제 기숙사 방 사진·사물함 복도) · 바닥·원근·그림자·색 맞춤·빛 번짐 · `tools/dev/kv_mock2.py` · 그림은 남의 이미지 포함이라 채팅으로만 (env-style-direction §8) [후보]
 - 2026-11-27: **2D 배경 사진 + 일러스트 시안** — ComfyUI 기숙생 4명(마네킹·장산범·TV머리·도깨비, anime-seg로 바탕 지움) + Poly Haven CC0 사진 배경(사물함 복도·침대 방) · ① 사진 그대로 / ② 미니어처 사진 처리 × 낮/밤 · `docs/plan/img/kv_mock_20261127/kv_compare.jpg` · `tools/dev/kv_mock.py` (env-style-direction §7) [후보]. 정지 화면만
 - 2026-11-27: **바이럴 비주얼 판단** (env-style-direction §6) — Mouse P.I.(7,290만 조회, 매체 섞임)·MiSide(귀여움→공포)·Mouthwashing(상징 이미지 하나) 근거 · 추천 = 낮 ② 인형의 집 → 밤 같은 모양에 재질·빛만 사실풍으로 바뀌고 종이인형만 그대로 = "인형의 집이 밤마다 진짜가 된다" 5초 변화가 홍보 장면 [후보]
 - 2026-11-27: **배경 스타일 3종 직접 시험** — 같은 복도를 극사실·데포르메·단순(저해상도) × 낮/밤 + 종이인형 카드로 렌더(`tools/dev/style3_test.gd`, Poly Haven CC0 재질, SDFGI·면 조명·안개·손전등, 클라우드 lavapipe) · 비교 `docs/plan/img/style3_test_20261127/style3_compare.jpg` · Claude 판단 ② 데포르메가 카드 어울림·낮 아늑·밤 대비 균형 최고, ① 카드가 스티커처럼, ③ 해상도 충돌 (env-style-direction §5) [후보]. 정지 화면만
