@@ -18,6 +18,7 @@ _마지막 갱신: 2026-11-27_
 5. 사용자 결정 대기: 건물 이름 · 메인 기숙생 고르기 · 게임 길이 · 가제 · 밤 방식(어두운 빛 / 거친 저해상도) · 정확한 등신(작업값 5.5)
 
 ## 최근 완료
+- 2026-11-27: **데포르메 스타일 6가지 렌더** (사용자: 차이 약함·스타일 정하기) — 같은 복도에 극사실 1 + 데포르메 6(어두운 미니어처·점토·종이 공예·장난감 플라스틱·애니 툰·손그림), 참고 게임 2장씩과 비교(채팅만) · `tools/dev/deform_styles.gd` · `docs/plan/img/deform_styles_20261127/deform_styles_compare.jpg` · 차이는 비율보다 겉면 스타일에서 남 · 추천 '진짜 인형의 집 재료'(나무판+종이 벽지+플라스틱) (env-style-direction §10) [후보]. 정지 화면만
 - 2026-11-27: **같은 배경에서 낮·밤 섞기** (사용자 질문) — 된다: 모양 하나 + 재질·빛·화면 두 벌, 종이인형만 그대로 · 섞는 방식 4(한 번에·번져 감·손전등 속만·날마다 조금씩), 추천 한 번에 + 날마다 · 시안 `docs/plan/img/kv_mock_20261127/same_place_day_night.jpg` + 전환 영상 2개 (env-style-direction §9) [후보]. 2D 근사, 3D 확인은 PC 복도 시험
 - 2026-11-27: **2.5D 합성 2차** — 전신 일러스트 6명(cast_v3) + 데포르메 게임 배경 4(Banban·Hello Neighbor 2·Little Nightmares II·Bendy)·실사 배경 4(Room 404·실제 기숙사 방 사진·사물함 복도) · 바닥·원근·그림자·색 맞춤·빛 번짐 · `tools/dev/kv_mock2.py` · 그림은 남의 이미지 포함이라 채팅으로만 (env-style-direction §8) [후보]
 - 2026-11-27: **2D 배경 사진 + 일러스트 시안** — ComfyUI 기숙생 4명(마네킹·장산범·TV머리·도깨비, anime-seg로 바탕 지움) + Poly Haven CC0 사진 배경(사물함 복도·침대 방) · ① 사진 그대로 / ② 미니어처 사진 처리 × 낮/밤 · `docs/plan/img/kv_mock_20261127/kv_compare.jpg` · `tools/dev/kv_mock.py` (env-style-direction §7) [후보]. 정지 화면만
