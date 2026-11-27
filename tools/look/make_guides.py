@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageFilter
 
-SPACES = ["corridor", "room", "office", "stairs"]
+SPACES = ["corridor", "corridor_b", "room", "room_b", "office", "stairs", "laundry", "lounge"]
 
 
 def depth(p: Path) -> Image.Image:

@@ -3,13 +3,16 @@
 준비 (PC, 한 번만):
   ComfyUI/models/checkpoints/  sd_xl_base_1.0.safetensors (Stability AI, OpenRAIL++)  + 이미 있는 animagine-xl-4.0-opt
   ComfyUI/models/controlnet/   controlnet-union-sdxl-1.0-promax.safetensors (xinsir, Apache-2.0)
-실행 (ComfyUI를 켜 둔 상태에서, 저장소 폴더에서):
-  python tools/look/run_comfy_looks.py                      # 전부(4곳 × 16화풍 = 64장) 큐에 넣고 끝날 때까지 기다림
-  python tools/look/run_comfy_looks.py --spaces corridor --styles S04_pencil,S06_anime_bg
-  python tools/look/run_comfy_looks.py --night               # 밤 판
-  python tools/look/run_comfy_looks.py --dry-run             # 보낼 워크플로만 출력(ComfyUI 없이 확인)
-  python tools/look/run_comfy_looks.py --sheet "ComfyUI/output/dorm_look"   # 이미 뽑은 그림으로 비교표만
-결과: ComfyUI/output/dorm_look/<공간>_<화풍>[_night]_00001_.png → --sheet 폴더에 공간별·화풍별 비교 한 장.
+실행 (ComfyUI를 켜 둔 상태에서, 저장소 폴더에서). 묶음(--preset):
+  1 = 화풍 44가지 × 복도·2인실 (88장, 약 40분)            ← 먼저 이것
+  2 = 화풍 44가지 × 보기 8곳 전부 (352장, 약 2.5시간)
+  3 = 고른 화풍(--styles, 기본 8개) × 조명 11가지 × 복도·2인실 (176장)
+  4 = 무작위 섞기 --random N (보기·화풍·조명을 무작위로 N장, 기본 60) — 생각 못 한 조합 찾기
+  python tools/look/run_comfy_looks.py --preset 1 --out "<ComfyUI>/output/dorm_look"
+  python tools/look/run_comfy_looks.py --spaces lounge --styles S04_pencil,S26_neon --moods M01_dusk,M06_blinds --seeds 3
+  python tools/look/run_comfy_looks.py --dry-run --preset 2     # 몇 장인지·워크플로만 확인
+  python tools/look/run_comfy_looks.py --sheet "<ComfyUI>/output/dorm_look"   # 비교표만
+결과: ComfyUI/output/dorm_look/<보기>_<화풍>_<조명>_s<번호>_00001_.png → 같은 폴더에 비교표 _sheet_*.jpg (화풍 비교·조명 비교).
 구도 고정: 깊이(depth) + 선(lines) 두 ControlNet을 겹쳐 쓴다. 화풍이 구도를 너무 따르면 --cn 값을 낮춘다.
 """
 import argparse
@@ -42,9 +45,9 @@ def upload(server: str, path: Path) -> str:
 	return f"{r.get('subfolder', 'dorm_look_guides')}/{r.get('name', path.name)}"
 
 
-def workflow(cfg: dict, space: str, style: dict, night: bool, depth_img: str, line_img: str, seed: int, cn: float) -> dict:
-	pos = f"{cfg['spaces'][space]}, {style['prompt']}" + (cfg["night_suffix"] if night else "")
-	name = f"dorm_look/{space}_{style['id']}" + ("_night" if night else "")
+def workflow(cfg: dict, space: str, style: dict, mood: dict | None, depth_img: str, line_img: str, seed: int, cn: float, k: int) -> dict:
+	pos = f"{cfg['spaces'][space]}, {style['prompt']}" + (f", {mood['prompt']}" if mood else "")
+	name = f"dorm_look/{space}_{style['id']}_{mood['id'] if mood else 'M00'}_s{k}"
 	return {
 		"1": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": cfg["models"][style.get("ckpt", "base")]}},
 		"2": {"class_type": "CLIPTextEncode", "inputs": {"text": pos, "clip": ["1", 1]}},
@@ -74,71 +77,125 @@ def wait_empty(server: str) -> None:
 		time.sleep(5)
 
 
+def parse(name: str, cfg: dict):
+	"""<보기>_<화풍>_<조명>_s<k>_00001_.png → (보기, 화풍, 조명, k)"""
+	for v in sorted(cfg["spaces"], key=len, reverse=True):
+		if not name.startswith(v + "_"):
+			continue
+		rest = name[len(v) + 1:]
+		for st in cfg["styles"]:
+			if rest.startswith(st["id"] + "_"):
+				r2 = rest[len(st["id"]) + 1:]
+				mood, _, tail = r2.partition("_s")
+				return v, st["id"], mood, tail.split("_")[0]
+	return None
+
+
 def sheet(out_dir: Path, cfg: dict) -> None:
 	from PIL import Image, ImageDraw, ImageFont
 	try:
-		font = ImageFont.truetype("malgun.ttf", 22)
+		font = ImageFont.truetype("malgun.ttf", 20)
 	except OSError:
 		font = ImageFont.load_default()
-	styles = cfg["styles"]
-	w, h = 448, 256
-	for night in (False, True):
-		suf = "_night" if night else ""
-		for sp in cfg["spaces"]:
-			files = []
-			for st in styles:
-				hits = sorted(out_dir.glob(f"{sp}_{st['id']}{suf}_*.png"))
-				files.append((st, hits[-1] if hits else None))
-			if not any(f for _, f in files):
-				continue
-			cols = 4
-			rows = (len(files) + cols - 1) // cols
-			img = Image.new("RGB", (cols * w, rows * (h + 28)), (16, 15, 20))
-			d = ImageDraw.Draw(img)
-			for i, (st, f) in enumerate(files):
-				x, y = (i % cols) * w, (i // cols) * (h + 28)
-				d.text((x + 6, y + 4), f"{st['id']} {st['name']}", font=font, fill=(255, 220, 120))
-				if f:
-					img.paste(Image.open(f).convert("RGB").resize((w - 4, h)), (x + 2, y + 28))
-			p = out_dir / f"_sheet_{sp}{suf}.jpg"
-			img.save(p, quality=85)
-			print("비교표", p)
+	names = {st["id"]: st["name"] for st in cfg["styles"]}
+	names.update({m["id"]: m["name"] for m in cfg.get("moods", [])})
+	names["M00"] = "기본 빛"
+	items = {}
+	for f in sorted(out_dir.glob("*.png")):
+		p = parse(f.stem, cfg)
+		if p:
+			items[p] = f  # 같은 이름이면 마지막 것
+	def grid(title: str, cells: list, path: Path) -> None:
+		w, h, cols = 448, 256, 4
+		rows = (len(cells) + cols - 1) // cols
+		img = Image.new("RGB", (cols * w, 40 + rows * (h + 26)), (16, 15, 20))
+		d = ImageDraw.Draw(img)
+		d.text((8, 8), title, font=font, fill=(255, 220, 120))
+		for i, (label, f) in enumerate(cells):
+			x, y = (i % cols) * w, 40 + (i // cols) * (h + 26)
+			d.text((x + 6, y + 3), label, font=font, fill=(255, 255, 255))
+			img.paste(Image.open(f).convert("RGB").resize((w - 4, h)), (x + 2, y + 24))
+		img.save(path, quality=84)
+		print("비교표", path)
+	keys = set((v, m, k) for v, st, m, k in items)
+	for v, m, k in sorted(keys):  # 화풍 비교: 보기·조명·번호 고정
+		cells = [(f"{st} {names.get(st, '')}", items[(v, st, m, k)]) for st in [s["id"] for s in cfg["styles"]] if (v, st, m, k) in items]
+		if len(cells) >= 2:
+			grid(f"{v} · {names.get(m, m)} · s{k} — 화풍 비교", cells, out_dir / f"_sheet_style_{v}_{m}_s{k}.jpg")
+	keys2 = set((v, st, k) for v, st, m, k in items)
+	for v, st, k in sorted(keys2):  # 조명 비교: 보기·화풍·번호 고정
+		cells = [(f"{m} {names.get(m, '')}", f) for (v2, st2, m, k2), f in sorted(items.items()) if (v2, st2, k2) == (v, st, k)]
+		if len(cells) >= 3:
+			grid(f"{v} · {st} {names.get(st, '')} · s{k} — 조명 비교", cells, out_dir / f"_sheet_mood_{v}_{st}_s{k}.jpg")
+
+
+PRESET_STYLES_3 = "S01_photo,S03_dollhouse,S04_pencil,S06_anime_bg,S08_ligne_claire,S10_papercraft,S15_stage,S16_clay"
 
 
 def main() -> None:
+	import random
 	ap = argparse.ArgumentParser()
 	ap.add_argument("--server", default="http://127.0.0.1:8188")
+	ap.add_argument("--preset", type=int, default=0)
 	ap.add_argument("--spaces", default="")
 	ap.add_argument("--styles", default="")
-	ap.add_argument("--night", action="store_true")
+	ap.add_argument("--moods", default="", help="조명 id 목록 또는 all (비우면 기본 빛)")
+	ap.add_argument("--night", action="store_true", help="기본 밤(night_suffix)을 조명처럼 씀")
+	ap.add_argument("--seeds", type=int, default=1, help="같은 조합을 몇 장씩")
+	ap.add_argument("--random", type=int, default=0, help="무작위 조합 N장")
 	ap.add_argument("--seed", type=int, default=20261127)
 	ap.add_argument("--cn", type=float, default=1.0, help="구도 고정 세기 배수 (0.6 = 더 자유롭게)")
 	ap.add_argument("--dry-run", action="store_true")
 	ap.add_argument("--no-wait", action="store_true")
-	ap.add_argument("--sheet", default="", help="ComfyUI/output/dorm_look 폴더 경로 → 비교표만 만들기")
+	ap.add_argument("--sheet", default="", help="ComfyUI/output/dorm_look 폴더 → 비교표만 만들기")
 	ap.add_argument("--out", default="", help="다 뽑은 뒤 비교표를 만들 ComfyUI/output/dorm_look 경로")
 	a = ap.parse_args()
 	cfg = json.loads((HERE / "looks.json").read_text(encoding="utf-8"))
 	if a.sheet:
 		sheet(Path(a.sheet), cfg)
 		return
+	if a.preset == 1:
+		a.spaces = a.spaces or "corridor,room"
+	elif a.preset == 3:
+		a.spaces = a.spaces or "corridor,room"
+		a.styles = a.styles or PRESET_STYLES_3
+		a.moods = a.moods or "all"
+	elif a.preset == 4:
+		a.random = a.random or 60
 	spaces = [s for s in cfg["spaces"] if not a.spaces or s in a.spaces.split(",")]
 	styles = [s for s in cfg["styles"] if not a.styles or s["id"] in a.styles.split(",")]
-	n = 0
-	for sp in spaces:
+	all_moods = cfg.get("moods", [])
+	if a.moods == "all":
+		moods = list(all_moods)
+	elif a.moods:
+		moods = [m for m in all_moods if m["id"] in a.moods.split(",")]
+	elif a.night:
+		moods = [{"id": "M00night", "name": "밤", "prompt": cfg["night_suffix"].lstrip(", ")}]
+	else:
+		moods = [None]
+	jobs = []
+	if a.random:
+		rng = random.Random(a.seed)
+		for _ in range(a.random):
+			jobs.append((rng.choice(spaces), rng.choice(styles), rng.choice([None] + all_moods), 0))
+	else:
+		for sp in spaces:
+			for st in styles:
+				for m in moods:
+					for k in range(a.seeds):
+						jobs.append((sp, st, m, k))
+	guides = {}
+	for i, (sp, st, m, k) in enumerate(jobs):
+		if sp not in guides:
+			guides[sp] = (f"dorm_look_guides/{sp}_depth.png", f"dorm_look_guides/{sp}_lines.png") if a.dry_run else (upload(a.server, GUIDES / f"{sp}_depth.png"), upload(a.server, GUIDES / f"{sp}_lines.png"))
+		wf = workflow(cfg, sp, st, m, guides[sp][0], guides[sp][1], a.seed + i * 7919 + k, a.cn, k)
 		if a.dry_run:
-			dimg, limg = f"dorm_look_guides/{sp}_depth.png", f"dorm_look_guides/{sp}_lines.png"
+			if i == 0:
+				print(json.dumps(wf, ensure_ascii=False, indent=1))
 		else:
-			dimg, limg = upload(a.server, GUIDES / f"{sp}_depth.png"), upload(a.server, GUIDES / f"{sp}_lines.png")
-		for i, st in enumerate(styles):
-			wf = workflow(cfg, sp, st, a.night, dimg, limg, a.seed + i, a.cn)
-			if a.dry_run:
-				if n == 0:
-					print(json.dumps(wf, ensure_ascii=False, indent=1))
-			else:
-				http(f"{a.server}/prompt", json.dumps({"prompt": wf, "client_id": "dorm-look"}).encode(), {"Content-Type": "application/json"})
-			n += 1
-	print(f"{'확인만' if a.dry_run else '큐에 넣음'}: {n}장 ({len(spaces)}곳 × {len(styles)}화풍{' · 밤' if a.night else ''})")
+			http(f"{a.server}/prompt", json.dumps({"prompt": wf, "client_id": "dorm-look"}).encode(), {"Content-Type": "application/json"})
+	n_sp = len(set(j[0] for j in jobs))
+	print(f"{'확인만' if a.dry_run else '큐에 넣음'}: {len(jobs)}장 (보기 {n_sp}곳, 약 {len(jobs) * 25 // 60}분 @ 장당 25초)")
 	if not a.dry_run and not a.no_wait:
 		wait_empty(a.server)
 		if a.out:

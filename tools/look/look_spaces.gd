@@ -5,7 +5,17 @@ extends SceneTree
 ##         -s res://tools/look/look_spaces.gd -- --dir=절대경로 [--space=corridor|room|office|stairs]
 ## 크기는 실제 한국 대학 기숙사 비율(대략). 화풍은 이 구도 위에 AI가 입히므로 모양만 맞으면 된다.
 
-const SPACES: Array[String] = ["corridor", "room", "office", "stairs"]
+## 보기 이름 → [지을 공간, 카메라 위치, 바라볼 곳] (카메라가 비어 있으면 공간 기본 카메라)
+const VIEWS: Dictionary = {
+	"corridor": ["corridor", null, null],
+	"corridor_b": ["corridor", Vector3(0.9, 1.5, -7.0), Vector3(-1.2, 1.2, -9.2)],
+	"room": ["room", null, null],
+	"room_b": ["room", Vector3(-0.3, 1.5, -4.6), Vector3(0.3, 1.1, 0.5)],
+	"office": ["office", null, null],
+	"stairs": ["stairs", null, null],
+	"laundry": ["laundry", null, null],
+	"lounge": ["lounge", null, null],
+}
 const MODES: Array[String] = ["clay", "depth", "normal"]
 const FAR: float = 16.0
 
@@ -27,12 +37,14 @@ func _init() -> void:
 	_run()
 
 func _run() -> void:
-	for sp: String in SPACES:
+	for sp: String in VIEWS:
 		if only_space != "" and sp != only_space:
 			continue
 		for m: String in MODES:
 			mode = m
-			await _build(sp)
+			await _build(VIEWS[sp][0])
+			if VIEWS[sp][1] != null:
+				cam.look_at_from_position(VIEWS[sp][1], VIEWS[sp][2], Vector3.UP)
 			for i: int in range(30 if m == "clay" else 4):
 				await process_frame
 			await RenderingServer.frame_post_draw
@@ -113,6 +125,10 @@ func _build(sp: String) -> void:
 			_office()
 		"stairs":
 			_stairs()
+		"laundry":
+			_laundry()
+		"lounge":
+			_lounge()
 	var we := WorldEnvironment.new()
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
@@ -204,8 +220,8 @@ func _room() -> void:
 	var h: float = 2.5
 	var hw: float = w * 0.5
 	var wall := Color(0.93, 0.92, 0.88)
-	_box(Vector3(w, 0.1, d), Vector3(0, -0.05, -d * 0.5), Color(0.72, 0.6, 0.45))
-	_box(Vector3(w, 0.1, d), Vector3(0, h + 0.05, -d * 0.5), Color(0.96, 0.96, 0.96))
+	_box(Vector3(w, 0.1, d + 0.8), Vector3(0, -0.05, -d * 0.5 + 0.4), Color(0.72, 0.6, 0.45))
+	_box(Vector3(w, 0.1, d + 0.8), Vector3(0, h + 0.05, -d * 0.5 + 0.4), Color(0.96, 0.96, 0.96))
 	for s: float in [-1.0, 1.0]:
 		_box(Vector3(0.2, h, d), Vector3(s * (hw + 0.1), h * 0.5, -d * 0.5), wall)
 	# 뒷벽 + 창문
@@ -219,6 +235,9 @@ func _room() -> void:
 	for s: float in [-1.0, 1.0]:
 		_box(Vector3(0.5, 1.6, 0.06), Vector3(s * 1.05, 1.45, -d + 0.15), Color(0.85, 0.8, 0.7))  # 커튼
 	_box(Vector3(w, h, 0.2), Vector3(0, h * 0.5, 0.6), wall)
+	_box(Vector3(0.9, 2.05, 0.05), Vector3(0.0, 1.025, 0.48), Color(0.62, 0.45, 0.3))  # 방문
+	_cyl(0.025, 0.08, Vector3(0.35, 1.0, 0.43), Color(0.8, 0.8, 0.8), Vector3(90, 0, 0))
+	_box(Vector3(0.6, 0.8, 0.02), Vector3(0.0, 1.5, 0.45), Color(0.97, 0.97, 0.97))  # 문에 붙인 수칙 종이
 	for s: float in [-1.0, 1.0]:
 		var x: float = s * (hw - 0.5)
 		# 침대 (창 쪽)
@@ -345,3 +364,100 @@ func _stairs() -> void:
 	_light(Vector3(0, land_y + 2.2, land_z - 0.6), 1.6, 6.0)
 	_light(Vector3(0.6, 2.4, 0.5), 0.8, 4.0)
 	cam.look_at_from_position(Vector3(0.7, 1.6, 1.7), Vector3(0.0, 2.0, -3.6), Vector3.UP)
+
+# ---------------------------------------------------------------- 세탁실
+func _laundry() -> void:
+	var w: float = 4.2
+	var d: float = 5.0
+	var h: float = 2.5
+	var hw: float = w * 0.5
+	var wall := Color(0.9, 0.92, 0.92)
+	_shell(w, d, h, wall, Color(0.75, 0.78, 0.78))
+	# 왼벽: 세탁기 4 + 위에 건조기 4
+	for k: int in range(4):
+		var z: float = -0.9 - k * 0.72
+		for lvl: int in range(2):
+			var y: float = 0.45 + lvl * 0.88
+			_box(Vector3(0.65, 0.85, 0.68), Vector3(-hw + 0.33, y, z), Color(0.95, 0.95, 0.95))
+			_cyl(0.22, 0.04, Vector3(-hw + 0.67, y - 0.05, z), Color(0.5, 0.55, 0.6), Vector3(0, 0, 90))
+			_box(Vector3(0.02, 0.08, 0.5), Vector3(-hw + 0.66, y + 0.33, z), Color(0.3, 0.3, 0.32))
+	# 가운데 접는 탁자 + 바구니
+	_box(Vector3(0.8, 0.05, 1.6), Vector3(0.3, 0.9, -2.6), Color(0.75, 0.7, 0.6))
+	for e: float in [-1.0, 1.0]:
+		_box(Vector3(0.05, 0.88, 0.05), Vector3(0.3 + e * 0.35, 0.44, -2.6 + e * 0.7), Color(0.5, 0.5, 0.5))
+	_box(Vector3(0.45, 0.3, 0.35), Vector3(0.2, 1.08, -2.2), Color(0.4, 0.6, 0.8))
+	_box(Vector3(0.45, 0.3, 0.35), Vector3(0.0, 0.15, -3.6), Color(0.9, 0.5, 0.5))
+	# 오른벽: 개수대 + 동전 기계 + 빨래 건조대
+	_box(Vector3(0.55, 0.85, 1.0), Vector3(hw - 0.28, 0.425, -1.4), Color(0.8, 0.8, 0.82))
+	_box(Vector3(0.45, 0.15, 0.7), Vector3(hw - 0.3, 0.8, -1.4), Color(0.6, 0.62, 0.65))
+	_box(Vector3(0.3, 1.5, 0.5), Vector3(hw - 0.15, 0.75, -2.5), Color(0.4, 0.45, 0.55))
+	for e: float in [-1.0, 1.0]:
+		_box(Vector3(0.04, 1.4, 0.04), Vector3(hw - 0.6, 0.7, -3.4 + e * 0.6), Color(0.7, 0.7, 0.7))
+	for r: int in range(4):
+		_box(Vector3(0.02, 0.02, 1.2), Vector3(hw - 0.6, 0.6 + r * 0.25, -3.4), Color(0.7, 0.7, 0.7))
+	_box(Vector3(0.03, 0.5, 0.4), Vector3(hw - 0.6, 1.15, -3.2), Color(0.9, 0.85, 0.95))  # 널어 둔 옷
+	_window_back(w, d, h, wall, 1.6, 1.0)
+	_box(Vector3(0.6, 0.05, 1.2), Vector3(0, h - 0.025, -2.5), Color(1, 1, 1))
+	_light(Vector3(0, h - 0.4, -2.5), 1.6, 6.0)
+	cam.look_at_from_position(Vector3(0.9, 1.6, 0.3), Vector3(-0.6, 1.0, -d), Vector3.UP)
+
+# ---------------------------------------------------------------- 휴게실
+func _lounge() -> void:
+	var w: float = 6.0
+	var d: float = 6.0
+	var h: float = 2.6
+	var hw: float = w * 0.5
+	var wall := Color(0.93, 0.9, 0.85)
+	_shell(w, d, h, wall, Color(0.7, 0.62, 0.5))
+	_window_back(w, d, h, wall, 4.0, 1.5)
+	# 소파 ㄱ자 + 낮은 탁자 + 벽걸이 TV
+	_box(Vector3(2.2, 0.42, 0.85), Vector3(-1.4, 0.21, -2.2), Color(0.45, 0.55, 0.65))
+	_box(Vector3(2.2, 0.45, 0.2), Vector3(-1.4, 0.65, -2.55), Color(0.45, 0.55, 0.65))
+	_box(Vector3(0.85, 0.42, 1.4), Vector3(-hw + 0.45, 0.21, -1.0), Color(0.45, 0.55, 0.65))
+	_box(Vector3(1.1, 0.4, 0.6), Vector3(-1.4, 0.2, -1.3), Color(0.6, 0.45, 0.32))
+	_box(Vector3(0.05, 0.7, 1.2), Vector3(-hw + 0.03, 1.5, -2.3), Color(0.1, 0.1, 0.12))
+	# 자판기 2 (오른벽)
+	for k: int in range(2):
+		_box(Vector3(0.75, 1.85, 0.9), Vector3(hw - 0.4, 0.925, -1.2 - k * 0.95), Color(0.8, 0.2, 0.2) if k == 0 else Color(0.2, 0.4, 0.75))
+		_box(Vector3(0.02, 1.1, 0.6), Vector3(hw - 0.79, 1.15, -1.2 - k * 0.95), Color(0.9, 0.9, 0.95))
+	# 둥근 탁자 2 + 의자
+	for t: Vector3 in [Vector3(0.6, 0, -3.6), Vector3(1.8, 0, -4.6)]:
+		_cyl(0.45, 0.04, t + Vector3(0, 0.74, 0), Color(0.85, 0.85, 0.8))
+		_cyl(0.05, 0.72, t + Vector3(0, 0.36, 0), Color(0.4, 0.4, 0.4))
+		for a: int in range(3):
+			var off := Vector3(cos(a * TAU / 3.0), 0, sin(a * TAU / 3.0)) * 0.7
+			_box(Vector3(0.4, 0.45, 0.4), t + off + Vector3(0, 0.225, 0), Color(0.7, 0.55, 0.35))
+	# 카운터: 전자레인지 + 정수기
+	_box(Vector3(1.6, 0.9, 0.55), Vector3(-0.4, 0.45, -d + 0.35), Color(0.75, 0.72, 0.68))
+	_box(Vector3(0.5, 0.3, 0.38), Vector3(-0.8, 1.05, -d + 0.35), Color(0.85, 0.85, 0.85))
+	_box(Vector3(0.3, 0.5, 0.3), Vector3(0.0, 1.15, -d + 0.35), Color(0.9, 0.9, 0.95))
+	# 책장 + 게시판
+	_box(Vector3(0.35, 1.8, 1.2), Vector3(-hw + 0.18, 0.9, -4.6), Color(0.6, 0.45, 0.3))
+	for r: int in range(4):
+		for b: int in range(8):
+			_box(Vector3(0.22, 0.28, 0.08), Vector3(-hw + 0.2, 0.3 + r * 0.42, -5.1 + b * 0.13), Color(0.3 + b * 0.07, 0.35 + r * 0.1, 0.5))
+	_box(Vector3(0.03, 0.8, 1.4), Vector3(hw - 0.02, 1.5, -3.6), Color(0.65, 0.5, 0.32))
+	for k: Vector3 in [Vector3(-1.0, 0, -2.0), Vector3(1.0, 0, -4.0)]:
+		_box(Vector3(0.6, 0.05, 1.2), k + Vector3(0, h - 0.025, 0), Color(1, 1, 1))
+		_light(k + Vector3(0, h - 0.4, 0), 1.3, 6.0)
+	cam.look_at_from_position(Vector3(1.6, 1.6, 0.3), Vector3(-1.2, 1.0, -d), Vector3.UP)
+
+func _shell(w: float, d: float, h: float, wall: Color, floor_c: Color) -> void:
+	var hw: float = w * 0.5
+	_box(Vector3(w, 0.1, d), Vector3(0, -0.05, -d * 0.5), floor_c)
+	_box(Vector3(w, 0.1, d), Vector3(0, h + 0.05, -d * 0.5), Color(0.96, 0.96, 0.96))
+	for s: float in [-1.0, 1.0]:
+		_box(Vector3(0.2, h, d), Vector3(s * (hw + 0.1), h * 0.5, -d * 0.5), wall)
+	_box(Vector3(w, h, 0.2), Vector3(0, h * 0.5, 0.6), wall)
+
+func _window_back(w: float, d: float, h: float, wall: Color, ww: float, wh: float) -> void:
+	var y0: float = 0.9
+	_box(Vector3(w, y0, 0.2), Vector3(0, y0 * 0.5, -d - 0.1), wall)
+	_box(Vector3(w, h - y0 - wh, 0.2), Vector3(0, y0 + wh + (h - y0 - wh) * 0.5, -d - 0.1), wall)
+	var side: float = (w - ww) * 0.5
+	for s: float in [-1.0, 1.0]:
+		_box(Vector3(side, wh, 0.2), Vector3(s * (w * 0.5 - side * 0.5), y0 + wh * 0.5, -d - 0.1), wall)
+	_box(Vector3(ww, wh, 0.02), Vector3(0, y0 + wh * 0.5, -d - 0.15), Color(0.7, 0.8, 0.9))
+	var n: int = int(ww / 0.9)
+	for k: int in range(1, n):
+		_box(Vector3(0.05, wh, 0.06), Vector3(-ww * 0.5 + k * ww / n, y0 + wh * 0.5, -d - 0.05), Color(0.85, 0.85, 0.85))
