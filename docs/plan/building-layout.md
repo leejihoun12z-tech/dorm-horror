@@ -92,3 +92,58 @@ _스타일과 상관없이 "무엇이 있나"만. 게임에서 쓰이는 물건�
 2. 엘리베이터 없음 — 괜찮은가
 3. 층마다 방 수: 8 / 10 [작업값 10]
 4. 건물이 지어진 때(물건·구조의 시대감, 스타일과 별개): 1980년대 후반 [후보] — 테라조 바닥·철제 방화문·형광등·나무 방문 같은 "무엇이 있나"만 정함
+
+## 9. 실제 기숙사 건물 조사 (2026-11-28, 사용자: "실제 기숙사 건물 디자인들 찾아봐")
+_그림·도면은 저장소에 넣지 않고 링크만 둔다. 한국 옛 기숙사 도면은 공개 자료가 거의 없어 [확인 필요]._
+
+### 9-1. 평면 유형 — 실제로 쓰이는 것
+| 유형 | 생김새 | 실제 | 우리 게임에 |
+|---|---|---|---|
+| **중복도형** | 가운데 복도, 양쪽에 방 | 한국 대학 기숙사에서 가장 흔함 — 거주 밀도를 높이려고 씀 [1]. 미국 "전통형(corridor style)"도 같음, 공용 화장실은 성별로 [2]. "건물 안의 골목길" [3] | 가장 기숙사다움. 후보 A·B·C 모두 방 쪽은 이 형태로 둘 수 있음 |
+| **편복도형** | 한쪽만 방, 반대쪽은 창 | 중정·안뜰을 둔 건물에서 흔함 | 후보 C의 안쪽 벽(중정 창) = 편복도 |
+| **회로형(고리형)** | 복도가 한 바퀴 이어짐 | 대학 기숙사 평면별 피난 연구에서 **회로형이 가장 안전**(두 방향으로 피할 수 있음) [4] | 후보 C의 근거 — 고리 복도는 실제로도 설계 이유가 있다 |
+| **계단실형** | 복도 없이 계단마다 방이 붙음 | 옥스퍼드·케임브리지 옛 칼리지: "복도가 아니라 계단 원칙", 계단에 글자, 방 주소는 "D3"처럼 [5][6] | 방 번호 체계 아이디어 — 계단 글자 + 번호가 바뀌는 이상현상 |
+| **중정·쿼드형** | 건물이 마당을 둘러쌈 | 영국 대학에서 시작, 계단 입구들이 쿼드를 감쌈 [7] · 코펜하겐 원형 중정 기숙사 [3] · 이화여대 기숙사 신관도 블록 사이 쿼드 같은 공간 [8] | 중정 창 너머 시선(§7-4) |
+| 스위트·아파트형 | 방 몇 개 + 거실 + 전용 욕실 | 요즘 신축 [2] | 오래된 별관과 안 맞음 → 쓰지 않음 |
+
+### 9-2. 사례에서 가져올 디테일
+| 사례 | 무엇 | 가져올 것 |
+|---|---|---|
+| 교토대 **요시다료** (1913, 목조) | 일본에서 가장 오래된, 아직 쓰이는 학생 기숙사. 식당은 1889년. 세 동이 E자 배치 · 내진 문제로 1982년부터 퇴거 요구, 학생들이 버팀 [9][10][11] | "오래된 별관"의 결: 낡았지만 사람이 사는 곳, 나가라는데 안 나가는 사람들 |
+| 요시다료 동관 | 1959~60년에 **노동자 숙소를 기숙사로 바꿈** [10] | 별관이 **원래 다른 용도였던 건물**일 수 있다 [후보, 조각만] — ㅁ자처럼 기숙사답지 않은 모양도 자연스러워짐 |
+| 이화여대 **빌링슬리관** (1959~1998) | 600~700명, "한국 대학 최초 현대식 기숙사" [12] | 한국 여자 기숙사의 시대감 기준점(80~90년대에도 쓰인 50년대 건물) |
+| 1960년대 미국 **여자 기숙사** | 열쇠는 하우스마더만, 밤·주말에 나갈 때 서명하고 들어오면 서명 [13][14] | 우리 사감 업무와 같음: **열쇠함 · 외출·외박 서명부 · 문 잠그는 시각** |
+| 미주리대 **Gentry Hall** (1944 여자 기숙사) | "남자는 위층에 못 올라감" · 그래서 **2층에는 지금도 남자 화장실이 없음** [15] | 남자 사감 설정과 딱 맞음: 위층은 점호·순찰 때만 올라감 · 2~4층에 남자 화장실 없음 · 사감 화장실은 1층 사감실 옆 |
+| Emory **Harris Hall** (1953 여자 기숙사) | T자 평면, 양쪽 방 복도 [16] | T자도 후보로 둘 수 있음(모퉁이 1개) |
+| 한국 1980년대 대학 기숙사 | 한 방 3~4명 숙박 위주 → **80년대 후반부터 2인실이 늘어남** · 층별 공용 세면·화장실은 옛 방식(신축은 방 안 화장실) [17] | 1980년대 후반 건물이면 **2인실 + 층별 공용 화장실·샤워실**이 자연스러움 (§4와 같음). 4인실 몇 개를 섞으면 "옛 방을 2인실로 고친" 흔적 |
+
+### 9-3. 치수 참고
+- 방 한 칸 사례(최근 기숙사): **2.6 × 5.6m(18.7㎡)**, 샤워·세면실과 화장실 각 1.15 × 2m [17] → §5의 4 × 6m는 넉넉한 편. 오래된 2인실이면 **3 × 5.5m** 정도로 줄여도 됨 [작업값 후보].
+- 복도: 양옆에 방이 있는 복도는 1.8m 이상 기준이 있음(생활숙박시설·공동주택 쪽 규정, 기숙사에 그대로 적용되는지는 [확인 필요]) [18] → §5의 2.2m는 실제보다 조금 넓음. **1.8~2.0m**로 줄이면 더 답답하고 무서움 [작업값 후보]. 1인칭 멀미는 걸어 보고 판단.
+- 한 복도에 25~30명이 "너무 시설 같지도, 외롭지도 않은" 크기였다는 설계 사례 [3] → 2인실 12~15개. 우리 10개(20명)는 조금 작고 아늑한 쪽.
+
+### 9-4. 조사로 바뀌는 추천
+1. **실제로 ㅁ자 중정 기숙사는 드물다** — 한국 대학 기숙사는 거의 중복도 일자·ㄱ자다(검색에서 ㅁ자 기숙사 사례를 못 찾음). 대신 학교·관공서·옛 병원에 ㅁ자가 흔하다.
+2. 그래서 C(ㅁ자)를 고른다면 **"원래 기숙사로 지은 건물이 아니다"** 쪽이 자연스럽다. 무엇이었는지는 말하지 않고 조각만 준다(setting-bible §4): 막힌 배식구, 번호가 다른 옛 문패, 쓰지 않는 방 하나.
+3. 실제 느낌을 가장 살리려면 **B'(ㄷ자) 또는 C를 쓰되 방 쪽은 중복도로** — 바깥 날개는 양쪽에 방(중복도), 중정 쪽 날개는 한쪽 방·한쪽 창(편복도).
+4. 확실히 가져올 디테일: 사감실 열쇠함·외출 서명부·문 잠그는 시각 · 위층에 남자 화장실 없음 · 2인실 + 층별 공용 화장실 · 계단 글자 + 방 번호 주소.
+
+### 출처
+1. [호남권 대학 기숙사 10개 조사(중복도 형태), koreascience](https://koreascience.kr/article/JAKO200730360545501.pdf)
+2. [Cornell — Residence Hall Configurations](https://scl.cornell.edu/sub/sub/residential-life/housing/housing-details/residence-hall-configurations)
+3. [Dwell — Back To School Special](https://www.dwell.com/article/back-to-school-special-0b6aad38)
+4. [대학 기숙사의 평면 형태에 따른 피난 안전성 검토(2010), koreascience](https://koreascience.kr/article/JAKO201013351025493.page)
+5. [Emmanuel College — staircase principle](https://www.emma.cam.ac.uk/members/blog/?id=500)
+6. [Queens' College — Staircase letters](https://history.queens.cam.ac.uk/college/buildings/staircase-letters)
+7. [Spaces4Learning — Models for Undergraduate Housing](https://spaces4learning.com/Articles/2007/08/01/Theres-No-Place-Like-Home-Models-for-Undergraduate-Housing.aspx)
+8. [VMSPACE — 이화여대 기숙사](https://vmspace.com/report/report_view.html?base_seq=MTQy)
+9. [Wikipedia — Yoshida dormitory](https://en.wikipedia.org/wiki/Yoshida_dormitory,_Kyoto_University)
+10. [Japanese Wiki Corpus — 京都大学吉田寮](https://japanese-wiki-corpus.github.io/history/Yoshida%20dormitory%20of%20Kyoto%20University.html)
+11. [Kyoto University 공지(2018)](https://www.kyoto-u.ac.jp/en/news/2018-02-02-4)
+12. [이화여대 기숙사 연혁](https://dmtry.ewha.ac.kr/engdorm/history.do)
+13. [On Wisconsin — Campus History](https://onwisconsin.uwalumni.com/?p=25709)
+14. [History Nebraska — Dress Codes & Curfews](https://history.nebraska.gov/dress-codes-curfews-nu-women-in-the-1960s/)
+15. [Mizzou CAFNR — No Men Upstairs](https://cafnr.missouri.edu/stories/no-men-upstairs)
+16. [Emory — Harris Hall](https://storymaps.arcgis.com/stories/a6e307a900354611ad4d0ac009436f1e)
+17. [대학 기숙사 단위공간 연구(2016), koreascience](https://koreascience.or.kr/article/JAKO201630765903642.pdf)
+18. [건축물방화구조규칙 제15조의2 복도 너비 유권해석](https://www.nepla.ai/wiki/국토와-건설-부동산/건설-건축-주거환경/-유권해석-건축물의-피난-방화구조-등의-기준에-관한-규칙-제15조의2-복도의-너비-및-설치기준-w5dnz320y8e6)
