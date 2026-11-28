@@ -14,6 +14,7 @@
 | 기획·흐름·시스템 | `docs/plan/dorm-horror-plan.md` (하루 흐름 §3) |
 | 구현 방식·구조 | `docs/plan/tech-plan.md` |
 | 세계·설정 | `docs/plan/setting-bible.md` (다 정하지 않는 원칙 §4) |
+| 건물·층·공간 | `docs/plan/building-layout.md` |
 | 컨셉·공포 연출 | `docs/plan/dorm-horror-concept.md` |
 | 아트·캐릭터 | `docs/plan/art-bible.md` |
 

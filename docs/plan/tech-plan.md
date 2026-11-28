@@ -439,7 +439,7 @@ _엔진 시험 결과 `engine-test-corridor.md` §5. Claude가 거의 다 만들
 
 **Claude 확인 방법**: C++ 빌드(UnrealBuildTool) 오류 0 → 편집기 Python으로 레벨 열기·플레이·`HighResShot` 찍기 → 자동 테스트(`Automation RunTests`). PC에 Visual Studio 2022 Community(MSVC·Windows SDK 10.0.26100) 있음 — 첫 C++ 빌드로 확인 [확인 필요]. 조작감·무서움은 사용자가 걸어 봐야 함.
 
-**진행 (2026-11-28)**: 1·2·3단계 됨 — `DormHorror/` C++ 프로젝트(빌드 오류 0) · Git LFS · Godot 정리(태그 `godot-last`) · 사감 1인칭(걷기 2.6 m/s · Shift 누르는 동안 숙이기, 눈높이 160→90cm 부드럽게 · F 손전등 · E/왼쪽 클릭) · 하루 진행기(`UDormDaySubsystem`, 시간대 5개 = `data/day_phases.csv`, 밤이면 천장 불 꺼짐) · 상호작용 물건 6종(`data/interactables.csv`) · 시험 복도(사감실 + 복도 20m, Python으로 지음) · 글자 HUD(한글 표시 확인). 확인 화면 `img/graybox_20261128/ue_graybox_v1.jpg`. 남은 것 = 4·5단계.
+**진행 (2026-11-28)**: 1·2·3단계 됨 — `DormHorror/` C++ 프로젝트(빌드 오류 0) · Git LFS · Godot 정리(태그 `godot-last`) · 사감 1인칭(걷기 2.6 m/s · Shift 누르는 동안 숙이기, 눈높이 160→90cm 부드럽게 · F 손전등 · E/왼쪽 클릭) · 하루 진행기(`UDormDaySubsystem`, 시간대 5개 = `data/day_phases.csv`, 밤이면 천장 불 꺼짐) · 상호작용 물건 6종(`data/interactables.csv`) · 시험 복도(사감실 + 복도 20m, Python으로 지음) · 글자 HUD(한글 표시 확인). 확인 화면 `img/graybox_20261128/ue_graybox_v1.jpg`. 남은 것 = 4·5단계 — **[보류]** 사용자 11-28: 건물 구조(`building-layout.md`)를 먼저 정하고 실제 평면으로 다시 짓는다.
 
 **회색 상자 판 첫 순서 (§4를 Unreal로)**
 1. C++ 프로젝트 `DormHorror` 만들기 · 빌드 확인 · Git LFS 설정 · Godot 정리
