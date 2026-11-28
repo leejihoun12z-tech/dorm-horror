@@ -1,6 +1,6 @@
 # 기숙사 공포 미연시 (가제 미정) — Claude 작업 가이드
 
-Godot 4.7 (GDScript) 1인칭 3D 공포 미연시예요. 던전 게임(MyGodotGame)과 **별개 프로젝트**예요.
+**Unreal Engine 5.8 (C++ 중심)** 1인칭 3D 공포 미연시예요(2026-11-28 Godot에서 바꿈, tech-plan §5-6). 던전 게임(MyGodotGame)과 **별개 프로젝트**예요.
 
 ## 현재 상태 (세션 시작 시 자동 로드)
 @docs/STATUS.md
@@ -32,19 +32,21 @@ Godot 4.7 (GDScript) 1인칭 3D 공포 미연시예요. 던전 게임(MyGodotGam
 - 결제·외부 공개·되돌리기 어려운 삭제는 사용자 승인 없이 하지 않는다.
 - 설정·미스터리는 다 정하지 않는다. 게임에서는 조각만 보여 준다(setting-bible §4).
 
-## 엔진·코드 규칙
-- Godot 4.7.x, Forward+, GDScript만. Godot 4 문법만(`@onready`, `@export`, `await`, `CharacterBody3D`).
-- 탭 들여쓰기, snake_case 함수·변수, PascalCase 클래스, CONSTANT_CASE 상수. 정적 타입을 늘 쓴다.
-- 씬과 스크립트는 기능별 폴더에 같이 둔다: `game/player/`, `game/world/`, `game/day/`, `game/dialogue/`. 데이터 표는 `data/`.
-- 입력은 InputMap 액션으로만 받는다(`project.godot` [input]). 키 코드를 코드에 직접 쓰지 않는다.
-- 씬 간 통신은 시그널, 전역 상태는 Autoload.
-- 내용(기숙생·이상현상·수칙·업무·대사)은 코드가 아니라 데이터 표로 넣는다(tech-plan §3).
+## 엔진·코드 규칙 (Unreal, [작업값] tech-plan §5-6)
+- Unreal Engine 5.8.x, Lumen, Windows. 설치 위치 `C:/Program Files/Epic Games/UE_5.8`.
+- 게임 규칙·하루 진행·데이터·저장은 **C++**. 블루프린트는 자산 연결·연출 타이밍만 얇게. 편집기 자동화(레벨 짓기·자산 가져오기·찍기)는 Python(`Scripts/`).
+- C++: Unreal 코딩 표준(클래스 접두어 `A`/`U`/`F`/`E`, PascalCase), `UPROPERTY`/`UFUNCTION`으로 편집기에 보이게.
+- 입력은 Enhanced Input(Input Action + Mapping Context)으로만. 키를 코드에 직접 쓰지 않는다. 조작은 tech-plan D3 [확정].
+- 내용(기숙생·이상현상·수칙·업무·대사)은 코드가 아니라 데이터 표로 넣는다: 원본 `data/*.csv` → DataTable (tech-plan §3).
+- `.uasset`·`.umap`·큰 그림·소리는 Git LFS. `Binaries/`·`Intermediate/`·`Saved/`·`DerivedDataCache/`는 git 제외.
+- Godot 파일(`project.godot`·`game/`·`addons/`·`tools/dev/*.gd`)은 [폐기·대체] — 회색 상자 판 시작 때 정리. 새 작업에 쓰지 않는다.
 
 ## 실행·확인
-- 에디터 F5 = 시험 복도(`game/world/test_corridor.tscn`).
-- 오류 검사: `godot --headless --path . --quit-after 120`
-- 입력 확인: `godot --headless --path . -s res://tools/dev/check_input.gd`
-- 화면 한 장: `godot --path . -s res://tools/dev/screenshot.gd -- --out=절대경로.png [--door] [--crouch]` (리눅스 서버는 `xvfb-run -a`로 감싸고 `--rendering-driver opengl3`). `--headless`로 찍으면 빈 화면.
+- 편집기 Python 실행: `UnrealEditor.exe <uproject> -ExecCmds="py <스크립트> <인자>"` (편집기 열린 채). `-ExecutePythonScript`는 끝나면 편집기를 닫는다.
+- 열린 편집기에 명령 보내기: 엔진의 `remote_execution.py` (프로젝트 설정 `bRemoteExecution=True`).
+- 화면 한 장: 플레이 중 `HighResShot 1600x900 filename=...` → `Saved/Screenshots/WindowsEditor`.
+- Python 이름 함정: Kismet 라이브러리는 접두어가 빠짐(`unreal.MaterialLibrary`), `LevelEditorPlaySettings`는 Python에 없음. 편집기 플레이는 120 fps 상한 — 실제 fps는 패키징 빌드로.
+- 엔진 시험 프로젝트(참고): `Projects/dorm-engine-test/DormLookUnreal` · 기록 `docs/plan/engine-test-corridor.md`.
 - 정지 화면 확인은 "관찰"이다. 조작감은 사용자가 직접 해 봐야 한다.
 
 ## 아트 자료

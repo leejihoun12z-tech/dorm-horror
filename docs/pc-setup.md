@@ -17,7 +17,9 @@ git clone https://github.com/leejihoun12z-tech/dorm-horror.git
 ## 3. 시험에 필요한 프로그램 (Claude가 설치 전에 물어봄)
 | 프로그램 | 쓰는 곳 | 비용 |
 |---|---|---|
-| Godot 4.7.2 | 게임 | 무료 (이미 있음) |
+| Unreal Engine 5.8 | 게임 (11-28 확정) | 무료(매출 100만 달러 넘으면 로열티) · 이미 있음 |
+| Visual Studio 2022 Community | Unreal C++ 빌드 | 무료 · 이미 있음 |
+| ~~Godot 4.7.2~~ | [폐기·대체] | |
 | Blender 4.x | 로우폴리 몸·머리카락 정리, 리깅 | 무료 |
 | Tripo 웹 (무료판) | 로우폴리 초안 (시험용, 상업 불가) | 무료 |
 | ComfyUI (이미 있음, MyGodotGame 아트 작업) | 캐릭터 그림 · 배경 룩 탐색(SDXL + ControlNet union, `tools/look/`) | 무료 |
