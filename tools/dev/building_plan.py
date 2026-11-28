@@ -110,20 +110,20 @@ F1_CORNER = {"SE": ("주 계단\n+ 엘리베이터\n(B 버튼은\n열쇠로 막�
 F2_CORNER = {"SE": ("주 계단\n+ 엘리베이터", "stair"), "SW": ("샤워실", "fac"),
 	"NE": ("화장실·세면\n(여자만)", "fac"), "NW": ("비상계단 (잠김)\n앞 막다른 구석", "lock")}
 
-# 방 종류 (§17, 사용자 11-28: 1인실·2인실 섞기) — 방 번호 끝 두 자리
-SINGLE = (5, 6, 7, 10)  # 1인실
-QUAD = 4  # 옛 4인실
+# 방 종류 (§18, 사용자 11-28: 1인실·2인실 섞기 + 32명) — 방 번호 끝 두 자리
+SINGLE = (3, 5, 6, 7, 9, 10)  # 1인실 (나머지 01·02·08·11 = 2인실)
+QUAD = 4  # 옛 큰 방 — 비어 있음(창고)
 
 
-def floor_rooms(f, vacant=()):
+def floor_rooms(f, vacant=(), single=SINGLE):
 	"""층 뼈대를 f층 번호로. 번호 = 순찰 순서(계단에서 시계 방향). vacant = 빈방(잠김)"""
 	def cell(n):
 		num = f"{f}{n:02d}"
 		if n in vacant:
 			return (f"{num}\n빈방\n(잠김)", "lock")
 		if n == QUAD:
-			return (f"{num}\n4인실\n옛 큰 방", "old")
-		if n in SINGLE:
+			return (f"{num}\n옛 큰 방\n(비어 있음\n· 창고)", "old")
+		if n in single:
 			return (f"{num}\n1인실", "single")
 		return (f"{num}\n2인실", "room")
 	return {
@@ -138,7 +138,8 @@ F2_MID = floor_rooms(2)
 F3_MID = floor_rooms(3)
 F3_MID["S"][2] = ("층 휴게\n정수기 · 소화기\n공중전화", "fac")
 F3_CORNER = dict(F2_CORNER)
-F4_MID = floor_rooms(4, vacant=(6, 7, 8))
+# 4층: 거의 빈 층 — 401(2인실)·402·411(1인실)만 사람
+F4_MID = floor_rooms(4, vacant=(3, 4, 5, 6, 7, 8, 9, 10), single=(2, 11))
 F4_CORNER = dict(F2_CORNER, SE=("주 계단\n+ 엘리베이터\n↑ 옥상 계단\n(옥상 문 잠김)", "stair"),
 	NW=("비상계단 (잠김)\n앞 막다른 구석\n\n★ '복도 끝' 창문\n(수칙 6)", "lock"))
 
@@ -190,7 +191,7 @@ def draw_roof(ax):
 if __name__ == "__main__" and "--upper" in sys.argv:
 	fig, axs = plt.subplots(1, 3, figsize=(24, 9.2))
 	draw_floor(axs[0], "3층 — 301~311 (2주차부터 순찰)", F3_MID, F3_CORNER)
-	draw_floor(axs[1], "4층 — 401~411, 북쪽 406~408 빈방 (3주차)", F4_MID, F4_CORNER, f4_extra)
+	draw_floor(axs[1], "4층 — 거의 빈 층: 401·402·411만 4명 (3주차)", F4_MID, F4_CORNER, f4_extra)
 	draw_roof(axs[2])
 	fig.text(0.5, 0.015,
 		"3·4층은 2층과 같은 뼈대 · 4층 북서 막다른 구석에 '복도 끝' 창문(수칙 6) · 옥상은 주 계단 위 계단탑으로만 나감 · 모두 [작업값]",
@@ -200,7 +201,7 @@ if __name__ == "__main__" and "--upper" in sys.argv:
 elif __name__ == "__main__":
 	fig, axs = plt.subplots(1, 2, figsize=(17, 9.6))
 	draw_floor(axs[0], "1층 — 사감실에서 출발·복귀", F1_MID, F1_CORNER, f1_extra)
-	draw_floor(axs[1], "2층 (3·4층도 같은 뼈대) — 2인실 6 · 1인실 4 · 4인실 1 = 20명", F2_MID, F2_CORNER)
+	draw_floor(axs[1], "2층 (3층도 같음) — 1인실 6 · 2인실 4 = 14명", F2_MID, F2_CORNER)
 	loop = 4 * (OUT - 2 * R - CW)
 	fig.text(0.5, 0.015,
 		f"위에서 본 평면 · 남쪽이 아래 · 바깥 {OUT:g}×{OUT:g}m · 방 {CELL:g}×{R:g}m · 복도 {CW:g}m · 복도 한 바퀴 약 {loop:.0f}m (모두 [작업값]) · "
