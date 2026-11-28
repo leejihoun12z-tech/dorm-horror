@@ -94,7 +94,24 @@ F2_MID = {  # 번호 = 순찰 순서(계단에서 시계 방향)
 F2_CORNER = {"SE": ("주 계단\n+ 엘리베이터", "stair"), "SW": ("샤워실", "fac"),
 	"NE": ("화장실·세면\n(여자만)", "fac"), "NW": ("비상계단 (잠김)\n앞 막다른 구석", "lock")}
 
-if __name__ == "__main__":
+# 1층 변경안 [후보] (§12): 식당 없앰 → 매점 2칸 + 공용 취사실 + 옛 식당(막힘)
+F1_MID_V2 = {
+	"S": F1_MID["S"],
+	"E": [("매점\n알바생 1\n(밤엔 셔터)", "shop"), ("매점\n진열대·음료장\n입구 앞 자판기", "shop"), ("옛 식당\n(막힘)\n배식구", "old")],
+	"N": [("세탁실", "fac"), ("휴게실\n냉장고", "fac"), ("휴게실\nTV·소파", "fac")],
+	"W": F1_MID["W"],
+}
+F1_CORNER_V2 = dict(F1_CORNER, NE=("공용 취사실\n(라면·간단 조리)\n전자레인지", "fac"))
+
+if __name__ == "__main__" and "--v2" in sys.argv:
+	fig, axs = plt.subplots(1, 2, figsize=(17, 9.6))
+	draw_floor(axs[0], "1층 지금 (§11)", F1_MID, F1_CORNER, f1_extra)
+	draw_floor(axs[1], "1층 변경안 [후보] — 식당 없음 · 매점 2칸 · 공용 취사실", F1_MID_V2, F1_CORNER_V2, f1_extra)
+	fig.text(0.5, 0.015, "매점 3×5.5m(약 5평) → 6×5.5m(약 10평) · 식사는 캠퍼스 식당·매점·취사실 · 원래 건물의 식당은 막힌 채 남음(옛 흔적)",
+		ha="center", fontsize=10)
+	fig.tight_layout(rect=(0, 0.035, 1, 0.97))
+	fig.savefig(sys.argv[1], dpi=110)
+elif __name__ == "__main__":
 	fig, axs = plt.subplots(1, 2, figsize=(17, 9.6))
 	draw_floor(axs[0], "1층 — 사감실에서 출발·복귀", F1_MID, F1_CORNER, f1_extra)
 	draw_floor(axs[1], "2층 (3·4층도 같은 뼈대) — 2인실 10 + 4인실 1 (번호 = 순찰 순서)", F2_MID, F2_CORNER)
