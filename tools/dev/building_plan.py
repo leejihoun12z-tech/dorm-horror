@@ -116,7 +116,83 @@ F2_MID = {  # 번호 = 순찰 순서(계단에서 시계 방향)
 F2_CORNER = {"SE": ("주 계단\n+ 엘리베이터", "stair"), "SW": ("샤워실", "fac"),
 	"NE": ("화장실·세면\n(여자만)", "fac"), "NW": ("비상계단 (잠김)\n앞 막다른 구석", "lock")}
 
-if __name__ == "__main__":
+def floor_rooms(f, vacant=()):
+	"""2층 뼈대를 f층 번호로. vacant = 빈방(잠김)으로 칠할 방 끝 두 자리"""
+	def cell(n):
+		if n == 4:
+			return (f"{f}04\n(4인실)\n옛 큰 방", "old")
+		return (f"{f}{n:02d}" + ("\n빈방\n(잠김)" if n in vacant else ""), "lock" if n in vacant else "room")
+	return {
+		"S": [cell(2), cell(1), ("층 휴게\n정수기\n소화기", "fac")],
+		"W": [cell(3), cell(4), cell(5)],
+		"N": [cell(6), cell(7), cell(8)],
+		"E": [cell(11), cell(10), cell(9)],
+	}
+
+
+F3_MID = floor_rooms(3)
+F3_MID["S"][2] = ("층 휴게\n정수기 · 소화기\n공중전화", "fac")
+F3_CORNER = dict(F2_CORNER)
+F4_MID = floor_rooms(4, vacant=(6, 7, 8))
+F4_CORNER = dict(F2_CORNER, SE=("주 계단\n+ 엘리베이터\n↑ 옥상 계단\n(옥상 문 잠김)", "stair"),
+	NW=("비상계단 (잠김)\n앞 막다른 구석\n\n★ '복도 끝' 창문\n(수칙 6)", "lock"))
+
+
+def f4_extra(ax):
+	# 수칙 6 창문 표시: 북서 막다른 구석의 바깥벽
+	ax.plot([0, 0], [OUT - R + 0.6, OUT - 0.6], color="#d62728", lw=4)
+	ax.annotate("창문", xy=(0, OUT - R / 2), xytext=(-1.4, OUT - R / 2), fontsize=8, color="#d62728", ha="right", va="center",
+		arrowprops=dict(arrowstyle="-", color="#d62728"))
+
+
+def draw_roof(ax):
+	"""옥상: ㅁ자 지붕 고리 + 가운데 중정 구멍(난간). 평소 잠김."""
+	ax.add_patch(Rectangle((0, 0), OUT, OUT, fc="#d9d6cf", ec="#333", lw=0.8))
+	ax.add_patch(Rectangle((A, A), Y, Y, fc="white", ec="#c0504d", lw=2.0, ls=(0, (4, 2))))
+	ax.text(OUT / 2, OUT / 2, "중정 위 빈 공간\n(낮은 난간 — 붉은 점선)\n아래로 각 층 창이 보임", ha="center", va="center", fontsize=8.5, color="#8a3b3b")
+	ax.add_patch(Rectangle((0.2, 0.2), OUT - 0.4, OUT - 0.4, fc="none", ec="#c0504d", lw=1.2, ls=(0, (4, 2))))
+	# 계단탑 + 옥상 문 + 엘리베이터 기계실 (남동)
+	ax.add_patch(Rectangle((OUT - 5.2, 0.6), 4.6, 4.2, fc=C["stair"], ec="#333", lw=0.8))
+	ax.text(OUT - 2.9, 2.7, "계단탑\n옥상 문(잠김)\n= 점검 8", ha="center", va="center", fontsize=7)
+	ax.add_patch(Rectangle((OUT - 8.0, 0.6), 2.6, 2.6, fc="#8c8c8c", ec="#333", lw=0.8))
+	ax.text(OUT - 6.7, 1.9, "엘리베이터\n기계실", ha="center", va="center", fontsize=6.5)
+	# 물탱크 (북동)
+	ax.add_patch(matplotlib.patches.Circle((OUT - 3.2, OUT - 3.2), 2.2, fc="#7fa7c9", ec="#333", lw=0.8))
+	ax.text(OUT - 3.2, OUT - 3.2, "물탱크", ha="center", va="center", fontsize=7)
+	# 빨래 줄 (남 날개 지붕)
+	for k in range(3):
+		yy = 1.8 + k * 1.3
+		ax.plot([A - 3.0, OUT - 8.6], [yy, yy], color="#555", lw=0.8)
+	ax.text((A - 3.0 + OUT - 8.6) / 2, 5.6, "빨래 줄", ha="center", fontsize=7, color="#333")
+	# 옛 굴뚝 (북서, 원래 건물 흔적 — 지하와 이어짐?)
+	ax.add_patch(Rectangle((1.2, OUT - 3.0), 1.8, 1.8, fc=C["old"], ec="#333", lw=0.8))
+	ax.text(2.1, OUT - 4.0, "옛 굴뚝\n(막힘)", ha="center", va="top", fontsize=7)
+	# 비상계단 꼭대기 해치
+	ax.add_patch(Rectangle((1.2, OUT - 7.0), 1.6, 1.6, fc="#8c8c8c", ec="#333", lw=0.8))
+	ax.text(3.2, OUT - 6.2, "비상계단\n해치(잠김)", ha="left", va="center", fontsize=6.5)
+	# 옛 TV 안테나
+	ax.plot([OUT / 2 + 5, OUT / 2 + 5], [OUT - 4.5, OUT - 1.0], color="#333", lw=1.2)
+	for d in (0.6, 1.2, 1.8):
+		ax.plot([OUT / 2 + 5 - d, OUT / 2 + 5 + d], [OUT - 1.0 - d, OUT - 1.0 - d], color="#333", lw=0.8)
+	ax.text(OUT / 2 + 5, OUT - 5.0, "옛 TV 안테나", ha="center", va="top", fontsize=6.5)
+	ax.set_title("옥상 — 평소 잠김 (3주차·후반)", fontsize=12)
+	ax.set_xlim(-1.5, OUT + 1.5)
+	ax.set_ylim(-3.0, OUT + 2.0)
+	ax.set_aspect("equal")
+	ax.axis("off")
+
+
+if __name__ == "__main__" and "--upper" in sys.argv:
+	fig, axs = plt.subplots(1, 3, figsize=(24, 9.2))
+	draw_floor(axs[0], "3층 — 301~311 (2주차부터 순찰)", F3_MID, F3_CORNER)
+	draw_floor(axs[1], "4층 — 401~411, 북쪽 406~408 빈방 (3주차)", F4_MID, F4_CORNER, f4_extra)
+	draw_roof(axs[2])
+	fig.text(0.5, 0.015,
+		"3·4층은 2층과 같은 뼈대 · 4층 북서 막다른 구석에 '복도 끝' 창문(수칙 6) · 옥상은 주 계단 위 계단탑으로만 나감 · 모두 [작업값]",
+		ha="center", fontsize=10)
+	fig.tight_layout(rect=(0, 0.035, 1, 0.97))
+	fig.savefig(sys.argv[1], dpi=100)
+elif __name__ == "__main__":
 	fig, axs = plt.subplots(1, 2, figsize=(17, 9.6))
 	draw_floor(axs[0], "1층 — 사감실에서 출발·복귀", F1_MID, F1_CORNER, f1_extra)
 	draw_floor(axs[1], "2층 (3·4층도 같은 뼈대) — 2인실 10 + 4인실 1 (번호 = 순찰 순서)", F2_MID, F2_CORNER)
