@@ -5,3 +5,7 @@
 *.vrm binary
 *.wav binary
 *.ogg binary
+# Unreal 자산은 Git LFS (tech-plan §5-6)
+*.uasset filter=lfs diff=lfs merge=lfs -text
+*.umap filter=lfs diff=lfs merge=lfs -text
+*.bat text eol=crlf

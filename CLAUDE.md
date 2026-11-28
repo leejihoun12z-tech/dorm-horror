@@ -42,6 +42,12 @@
 - Godot 파일(`project.godot`·`game/`·`addons/`·`tools/dev/*.gd`)은 [폐기·대체] — 회색 상자 판 시작 때 정리. 새 작업에 쓰지 않는다.
 
 ## 실행·확인
+- 프로젝트: `DormHorror/` (C++ `Source/DormHorror/`, 편집기 Python `Scripts/`, 데이터 원본 `data/*.csv`).
+- C++ 빌드(편집기가 닫혀 있어야 함 — 열린 편집기의 Live Coding이 막음): `"C:/Program Files/Epic Games/UE_5.8/Engine/Build/BatchFiles/Build.bat" DormHorrorEditor Win64 Development -Project=<절대경로>/DormHorror.uproject -WaitMutex`
+- 회색 상자 다시 짓기(입력 자산·데이터 표·시험 복도, 여러 번 돌려도 됨): `UnrealEditor.exe DormHorror/DormHorror.uproject -ExecutePythonScript=DormHorror/Scripts/build_test_corridor.py -unattended`
+- 스스로 플레이·찍기: `-ExecCmds="py DormHorror/Scripts/dev/shoot_play.py"` → `Saved/Screenshots/WindowsEditor/` (`shot showui` = UI 포함, `HighResShot`은 UI 빠짐) + 로그 `[DormShot]`.
+- 사용자 걸어 보기: `DormHorror/walk.bat` (편집기 없이 게임 창).
+- 소스 파일에 한글이 있으면 UTF-8 BOM으로 저장(MSVC).
 - 편집기 Python 실행: `UnrealEditor.exe <uproject> -ExecCmds="py <스크립트> <인자>"` (편집기 열린 채). `-ExecutePythonScript`는 끝나면 편집기를 닫는다.
 - 열린 편집기에 명령 보내기: 엔진의 `remote_execution.py` (프로젝트 설정 `bRemoteExecution=True`).
 - 화면 한 장: 플레이 중 `HighResShot 1600x900 filename=...` → `Saved/Screenshots/WindowsEditor`.

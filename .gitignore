@@ -2,3 +2,13 @@
 *.tmp
 .screenshots/
 /build/
+
+# Unreal (DormHorror/)
+DormHorror/Binaries/
+DormHorror/Intermediate/
+DormHorror/Saved/
+DormHorror/DerivedDataCache/
+DormHorror/.vs/
+DormHorror/*.sln
+DormHorror/*.slnx
+DormHorror/.vsconfig

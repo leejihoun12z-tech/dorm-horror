@@ -1,0 +1,6 @@
+---,Order,Label,Clock,Objective,bNight
+morning,0,아침,08:00,사감실 책상에서 아침 업무를 끝낸다,false
+day,1,낮,13:00,복도의 고장 난 전등을 고친다,false
+rollcall,2,점호,22:30,복도 게시판의 점호 명부를 확인한다,false
+patrol,3,심야 순찰,01:00,복도 끝 순찰 체크 지점을 찍는다,true
+dawn,4,새벽,05:00,사감실 침대에서 일지를 쓰고 잔다,true
