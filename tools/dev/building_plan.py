@@ -13,7 +13,7 @@ plt.rcParams["font.family"] = "Malgun Gothic"
 plt.rcParams["axes.unicode_minus"] = False
 
 C = {"room": "#f1e6d2", "cor": "#a7b0b9", "stair": "#c0504d", "fac": "#7fa7c9", "staff": "#e5b85c",
-	"lock": "#8c8c8c", "yard": "#dfe9d8", "old": "#c9b8d6"}
+	"lock": "#8c8c8c", "yard": "#dfe9d8", "shop": "#8fc98f", "old": "#c9b8d6"}
 OUT, CY0, CY1 = 27.0, 7.5, 19.5  # 바깥, 중정 범위
 R = 5.5  # 방 깊이
 
@@ -72,7 +72,7 @@ def f1_extra(ax):
 F1_MID = {
 	"S": [("택배·우편실\n신발장", "fac"), ("현관 홀\n게시판", "cor"), ("사감실\n(창구→현관)", "staff")],
 	"E": [("식당", "fac"), ("식당", "fac"), ("옛 배식구\n(막힘)", "old")],
-	"N": [("세탁실", "fac"), ("휴게실\n냉장고·TV", "fac"), ("휴게실", "fac")],
+	"N": [("세탁실", "fac"), ("휴게실\n냉장고·TV", "fac"), ("매점\n(밤엔 셔터)\n자판기", "shop")],
 	"W": [("수조 방\n(습성 배려)", "room"), ("창고", "lock"), ("번호가 다른\n옛 문패 방\n(잠김)", "old")],
 }
 F1_CORNER = {"SE": ("주 계단\n(위층으로)", "stair"), "SW": ("공용 화장실\n+ 사감 화장실", "fac"),
