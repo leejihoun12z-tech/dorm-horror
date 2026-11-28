@@ -22,7 +22,7 @@ WING = R + CW  # 날개 깊이
 OUT = Y + 2 * WING  # 바깥 한 변
 
 C = {"room": "#f1e6d2", "cor": "#a7b0b9", "stair": "#c0504d", "fac": "#7fa7c9", "staff": "#e5b85c",
-	"lock": "#8c8c8c", "yard": "#dfe9d8", "shop": "#8fc98f", "old": "#c9b8d6"}
+	"lock": "#8c8c8c", "yard": "#dfe9d8", "single": "#f6d2a8", "shop": "#8fc98f", "old": "#c9b8d6"}
 
 MID = {
 	"S": [(WING + i * CELL, 0, CELL, R) for i in range(N)],  # 서→동
@@ -107,21 +107,25 @@ F1_CORNER = {"SE": ("주 계단\n+ 엘리베이터\n(B 버튼은\n열쇠로 막�
 	"NE": ("휴게실 · 취사실 (합침, 약 20평)\nTV · 소파 · 냉장고\n싱크 · 전자레인지 · 라면 조리", "fac", NE_LOUNGE, (OUT - R * 0.75, OUT - R * 0.5)),
 	"NW": ("비상계단 (잠김)\n지하 철문\n(잠김)", "lock")}
 
-F2_MID = {  # 번호 = 순찰 순서(계단에서 시계 방향)
-	"S": [("202", "room"), ("201", "room"), ("층 휴게\n정수기\n소화기", "fac")],
-	"W": [("203", "room"), ("204\n(4인실)\n옛 큰 방", "old"), ("205", "room")],
-	"N": [("206", "room"), ("207", "room"), ("208", "room")],
-	"E": [("211", "room"), ("210", "room"), ("209", "room")],
-}
 F2_CORNER = {"SE": ("주 계단\n+ 엘리베이터", "stair"), "SW": ("샤워실", "fac"),
 	"NE": ("화장실·세면\n(여자만)", "fac"), "NW": ("비상계단 (잠김)\n앞 막다른 구석", "lock")}
 
+# 방 종류 (§17, 사용자 11-28: 1인실·2인실 섞기) — 방 번호 끝 두 자리
+SINGLE = (5, 6, 7, 10)  # 1인실
+QUAD = 4  # 옛 4인실
+
+
 def floor_rooms(f, vacant=()):
-	"""2층 뼈대를 f층 번호로. vacant = 빈방(잠김)으로 칠할 방 끝 두 자리"""
+	"""층 뼈대를 f층 번호로. 번호 = 순찰 순서(계단에서 시계 방향). vacant = 빈방(잠김)"""
 	def cell(n):
-		if n == 4:
-			return (f"{f}04\n(4인실)\n옛 큰 방", "old")
-		return (f"{f}{n:02d}" + ("\n빈방\n(잠김)" if n in vacant else ""), "lock" if n in vacant else "room")
+		num = f"{f}{n:02d}"
+		if n in vacant:
+			return (f"{num}\n빈방\n(잠김)", "lock")
+		if n == QUAD:
+			return (f"{num}\n4인실\n옛 큰 방", "old")
+		if n in SINGLE:
+			return (f"{num}\n1인실", "single")
+		return (f"{num}\n2인실", "room")
 	return {
 		"S": [cell(2), cell(1), ("층 휴게\n정수기\n소화기", "fac")],
 		"W": [cell(3), cell(4), cell(5)],
@@ -130,6 +134,7 @@ def floor_rooms(f, vacant=()):
 	}
 
 
+F2_MID = floor_rooms(2)
 F3_MID = floor_rooms(3)
 F3_MID["S"][2] = ("층 휴게\n정수기 · 소화기\n공중전화", "fac")
 F3_CORNER = dict(F2_CORNER)
@@ -195,11 +200,11 @@ if __name__ == "__main__" and "--upper" in sys.argv:
 elif __name__ == "__main__":
 	fig, axs = plt.subplots(1, 2, figsize=(17, 9.6))
 	draw_floor(axs[0], "1층 — 사감실에서 출발·복귀", F1_MID, F1_CORNER, f1_extra)
-	draw_floor(axs[1], "2층 (3·4층도 같은 뼈대) — 2인실 10 + 4인실 1 (번호 = 순찰 순서)", F2_MID, F2_CORNER)
+	draw_floor(axs[1], "2층 (3·4층도 같은 뼈대) — 2인실 6 · 1인실 4 · 4인실 1 = 20명", F2_MID, F2_CORNER)
 	loop = 4 * (OUT - 2 * R - CW)
 	fig.text(0.5, 0.015,
 		f"위에서 본 평면 · 남쪽이 아래 · 바깥 {OUT:g}×{OUT:g}m · 방 {CELL:g}×{R:g}m · 복도 {CW:g}m · 복도 한 바퀴 약 {loop:.0f}m (모두 [작업값]) · "
-		"초록 = 순찰 길(시계 방향) · 파란 점선 = 중정 창 · 보라 = 옛 건물 흔적",
+		"초록 = 순찰 길(시계 방향) · 파란 점선 = 중정 창 · 보라 = 옛 건물 흔적 · 연베이지 = 2인실 · 주황 = 1인실",
 		ha="center", fontsize=9.5)
 	fig.tight_layout(rect=(0, 0.035, 1, 0.97))
 	fig.savefig(sys.argv[1], dpi=110)
