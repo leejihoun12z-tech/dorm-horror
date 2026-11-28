@@ -90,13 +90,14 @@ def draw_floor(ax, title, mid, corner, extra=None):
 
 
 def f1_extra(ax):
-	ax.annotate("현관 (바깥문)", xy=(OUT / 2, 0), xytext=(OUT / 2, -2.2), ha="center", fontsize=8.5,
+	ax.annotate("현관 (바깥문)", xy=(A + CELL / 2, 0), xytext=(A + CELL / 2, -2.2), ha="center", fontsize=8.5,
 		arrowprops=dict(arrowstyle="-|>", color="#333"))
 
 
 # 1층 (§14, 사용자 11-28 3차): 식당 없음 · 매점 3칸 · 세탁실 2칸 · 휴게실+취사실 합침 · 독서실+창고 → 창고
 F1_MID = {
-	"S": [("택배·우편실\n신발장", "fac"), ("현관 홀\n게시판", "cor"), ("사감실\n(창구→현관)", "staff")],
+	"S": [("현관 홀\n신발장 · 우편함\n게시판", "cor"),
+		("사감실 (2칸, 약 10평)\n책상 · 창구(← 현관) · 열쇠함\n택배 보관 선반\n숙직 간이침대", "staff", 2), None],
 	"E": [("매점 (3칸, 약 15평)\n알바생 1 · 계산대\n진열대 · 음료장\n\n안쪽 벽에\n막힌 옛 배식구\n\n밤엔 셔터", "shop", 3)],
 	"N": [("세탁실 (2칸, 약 10평)\n세탁기 6 · 건조기 2\n전원 스위치 함", "fac", 2), None, None],
 	"W": [("창고 (2칸)", "lock", 2), None, ("번호가 다른\n옛 문패 방\n(잠김)", "old")],
